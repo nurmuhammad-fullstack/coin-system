@@ -6,272 +6,152 @@ const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
   const [currentUser, setCurrentUser] = useState(null);
-  const [coins, setCoins]             = useState({});
-  const [transactions, setTransactions] = useState({});
+  const [students, setStudents]       = useState([]);
   const [shopItems, setShopItems]     = useState([]);
+  const [transactions, setTransactions] = useState({});
   const [toast, setToast]             = useState(null);
   const [loading, setLoading]         = useState(true);
 
-  // Check if user is authenticated
-  const isAuthenticated = () => {
-    return !!localStorage.getItem('coined_token');
-  };
-
-  // Initialize - fetch data from backend (only if authenticated)
+  // ── Auto login from token ─────────────────────
   useEffect(() => {
-    const initData = async () => {
-      // Only fetch data if user is logged in
-      if (!isAuthenticated()) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        // First try to get user info
-        const userRes = await authAPI.me();
-        setCurrentUser(userRes);
-
-        // Fetch shop items (public for all users)
-        const items = await shopAPI.getAll();
-        setShopItems(items);
-
-        // If teacher, fetch all students
-        if (userRes.role === 'teacher') {
-          const studentsRes = await studentsAPI.getAll();
-          const coinsMap = {};
-          studentsRes.forEach(s => { coinsMap[s._id] = s.coins; });
-          setCoins(coinsMap);
-        } else if (userRes.role === 'student') {
-          // For students, load their own coins and transactions
-          setCoins(prev => ({ ...prev, [userRes._id]: userRes.coins }));
-          const txs = await studentsAPI.getTransactions(userRes._id);
-          setTransactions(prev => ({ ...prev, [userRes._id]: txs }));
-        }
-      } catch (err) {
-        console.error("Failed to load data:", err);
-        // Token might be invalid, clear it
-        localStorage.removeItem('coined_token');
-      } finally {
-        setLoading(false);
-      }
-    };
-    initData();
+    const token = localStorage.getItem("coined_token");
+    if (token) {
+      authAPI.me()
+        .then(user => setCurrentUser(user))
+        .catch(() => localStorage.removeItem("coined_token"))
+        .finally(() => setLoading(false));
+    } else {
+      setLoading(false);
+    }
   }, []);
 
-  // Also provide a way to refresh students
-  const refreshStudents = async () => {
-    try {
-      const studentsRes = await studentsAPI.getAll();
-      const coinsMap = {};
-      studentsRes.forEach(s => { coinsMap[s._id] = s.coins; });
-      setCoins(coinsMap);
-      return studentsRes;
-    } catch (err) {
-      console.error("Failed to refresh students:", err);
-      return [];
+  // ── Load students & shop when teacher logs in ─
+  useEffect(() => {
+    if (currentUser?.role === "teacher") {
+      studentsAPI.getAll().then(setStudents).catch(console.error);
+      shopAPI.getAll().then(setShopItems).catch(console.error);
     }
-  };
-
-  /* ── Auth ── */
-  const login = async (email, password) => {
-    try {
-      const res = await authAPI.login(email, password);
-      localStorage.setItem('coined_token', res.token);
-      setCurrentUser(res.user);
-
-      // Load user-specific data after login
-      if (res.user.role === 'student') {
-        // Load student's own data
-        setCoins(prev => ({ ...prev, [res.user._id]: res.user.coins }));
-        try {
-          const txs = await studentsAPI.getTransactions(res.user._id);
-          setTransactions(prev => ({ ...prev, [res.user._id]: txs }));
-        } catch (err) {
-          console.error("Failed to load transactions:", err);
-        }
-      } else if (res.user.role === 'teacher') {
-        // Load all students for teacher
-        await refreshStudents();
-        try {
-          const items = await shopAPI.getAll();
-          setShopItems(items);
-        } catch (err) {
-          console.error("Failed to load shop items:", err);
-        }
-      }
-
-      return { ok: true, role: res.user.role };
-    } catch (err) {
-      return { ok: false, message: err.message };
+    if (currentUser?.role === "student") {
+      shopAPI.getAll().then(setShopItems).catch(console.error);
     }
-  };
-  const logout = () => {
-    localStorage.removeItem('coined_token');
-    setCurrentUser(null);
-    setCoins({});
-    setTransactions({});
-  };
+  }, [currentUser]);
 
-  /* ── Toast ── */
+  // ── Toast ─────────────────────────────────────
   const showToast = (msg, type = "success") => {
     setToast({ msg, type });
     setTimeout(() => setToast(null), 2800);
   };
 
-  /* ── Coins ── */
+  // ── Auth ──────────────────────────────────────
+  const login = async (email, password) => {
+    const data = await authAPI.login(email, password);
+    localStorage.setItem("coined_token", data.token);
+    setCurrentUser(data.user);
+    return { ok: true, role: data.user.role };
+  };
+
+  const logout = () => {
+    localStorage.removeItem("coined_token");
+    setCurrentUser(null);
+    setStudents([]);
+    setShopItems([]);
+    setTransactions({});
+  };
+
+  // ── Students ──────────────────────────────────
+  const createStudent = async (data) => {
+    const res = await authAPI.createStudent(data);
+    setStudents(prev => [...prev, res.user || res]);
+    return res;
+  };
+
+  const deleteStudent = async (studentId) => {
+    await studentsAPI.deleteOne(studentId);
+    setStudents(prev => prev.filter(s => s._id !== studentId));
+  };
+
+  // ── Coins ─────────────────────────────────────
   const addCoins = async (studentId, amount, label = "Teacher Bonus") => {
-    try {
-      const res = await studentsAPI.addCoins(studentId, amount, label, "behavior");
-      // Update local state with response
-      setCoins(prev => ({ ...prev, [studentId]: res.student.coins }));
-      // Add transaction locally
-      addTransaction(studentId, {
-        label,
-        type: "earn",
-        amount,
-        date: "Just now",
-        category: "behavior"
-      });
-      return true;
-    } catch (err) {
-      showToast(err.message, "error");
-      return false;
-    }
-  };
-
-  const removeCoins = async (studentId, amount, label = "Teacher Deduction") => {
-    try {
-      const res = await studentsAPI.removeCoins(studentId, amount, label, "behavior");
-      // Update local state with response
-      setCoins(prev => ({ ...prev, [studentId]: res.student.coins }));
-      // Add transaction locally
-      addTransaction(studentId, {
-        label,
-        type: "spend",
-        amount: -amount,
-        date: "Just now",
-        category: "behavior"
-      });
-      return true;
-    } catch (err) {
-      showToast(err.message, "error");
-      return false;
-    }
-  };
-
-  const spendCoins = async (userId, amount, itemName, itemId) => {
-    const currentCoins = coins[userId] || 0;
-    if (currentCoins < amount) return false;
-    try {
-      // Call backend API to purchase item (pass itemId, not userId)
-      const res = await shopAPI.buyItem(itemId);
-      // Update local state with response from server
-      setCoins(prev => ({ ...prev, [userId]: res.student.coins }));
-      addTransaction(userId, { label: itemName, type: "spend", amount: -amount, date: "Just now", category: "shop" });
-      return true;
-    } catch (err) {
-      showToast(err.message, "error");
-      return false;
-    }
-  };
-
-  /* ── Transactions ── */
-  const loadTransactions = async (studentId) => {
-    try {
-      const txs = await studentsAPI.getTransactions(studentId);
-      setTransactions(prev => ({
-        ...prev,
-        [studentId]: txs
-      }));
-    } catch (err) {
-      console.error("Failed to load transactions:", err);
-    }
-  };
-
-  const addTransaction = (userId, tx) => {
+    const res = await studentsAPI.addCoins(studentId, amount, label, "behavior");
+    setStudents(prev => prev.map(s => s._id === studentId ? { ...s, coins: res.student.coins } : s));
     setTransactions(prev => ({
       ...prev,
-      [userId]: [{ id: Date.now(), ...tx }, ...(prev[userId] || [])]
+      [studentId]: [{ _id: Date.now(), label, type: "earn", amount, date: "Just now" }, ...(prev[studentId] || [])]
     }));
   };
 
-  /* ── Shop ── */
-  const addShopItem = async (item) => {
+  const removeCoins = async (studentId, amount, label = "Teacher Deduction") => {
+    const res = await studentsAPI.removeCoins(studentId, amount, label, "behavior");
+    setStudents(prev => prev.map(s => s._id === studentId ? { ...s, coins: res.student.coins } : s));
+    setTransactions(prev => ({
+      ...prev,
+      [studentId]: [{ _id: Date.now(), label, type: "spend", amount: -amount, date: "Just now" }, ...(prev[studentId] || [])]
+    }));
+  };
+
+  const spendCoins = async (userId, amount, itemName) => {
     try {
-      const newItem = await shopAPI.addItem(item);
-      setShopItems(prev => [...prev, newItem]);
+      await studentsAPI.removeCoins(userId, amount, itemName, "shop");
+      setCurrentUser(prev => ({ ...prev, coins: (prev.coins || 0) - amount }));
       return true;
-    } catch (err) {
-      showToast(err.message, "error");
+    } catch {
       return false;
     }
   };
 
-  const removeShopItem = async (id) => {
+  // ── Transactions ──────────────────────────────
+  const loadTransactions = async (studentId) => {
     try {
-      await shopAPI.deleteItem(id);
-      // Handle both _id and id formats
-      setShopItems(prev => prev.filter(i => (i._id || i.id) !== id));
-      return true;
+      const txs = await studentsAPI.getTransactions(studentId);
+      setTransactions(prev => ({ ...prev, [studentId]: txs }));
     } catch (err) {
-      showToast(err.message, "error");
-      return false;
+      console.error(err);
     }
   };
 
-  /* ── Students (local only) ── */
-  const deleteStudent = async (studentId) => {
-    try {
-      await studentsAPI.deleteOne(studentId);
-      // Remove from coins
-      setCoins(prev => {
-        const newCoins = { ...prev };
-        delete newCoins[studentId];
-        return newCoins;
-      });
-      // Remove from transactions
-      setTransactions(prev => {
-        const newTx = { ...prev };
-        delete newTx[studentId];
-        return newTx;
-      });
-      return true;
-    } catch (err) {
-      showToast(err.message, "error");
-      return false;
-    }
+  // ── Helpers ───────────────────────────────────
+  const getStudentCoins = (id) => {
+    const s = students.find(s => s._id === id);
+    if (s) return s.coins || 0;
+    if (currentUser?._id === id) return currentUser.coins || 0;
+    return 0;
   };
 
-  /* ── Helpers ── */
-  // For now, get students from local data - in production would fetch from API
-  // Students will be fetched via refreshStudents function
-  const [studentsList, setStudentsList] = useState([]);
-
-  const getStudents = async () => {
-    try {
-      const res = await studentsAPI.getAll();
-      setStudentsList(res);
-      return res;
-    } catch (err) {
-      console.error("Failed to get students:", err);
-      return [];
-    }
-  };
-
-  const students = studentsList;
-  const getStudentCoins = (id) => coins[id] || 0;
   const getStudentTransactions = (id) => transactions[id] || [];
+
+  // ── Shop ──────────────────────────────────────
+  const addShopItem  = async (item) => {
+    const res = await shopAPI.addItem(item);
+    setShopItems(prev => [...prev, res]);
+  };
+  const removeShopItem = async (id) => {
+    await shopAPI.deleteItem(id);
+    setShopItems(prev => prev.filter(i => i._id !== id && i.id !== id));
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <div className="text-center">
+          <div className="text-5xl mb-3 animate-bounce">🪙</div>
+          <p className="font-bold text-slate-500">Loading CoinEd...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <AppContext.Provider value={{
       currentUser, login, logout,
-      coins, transactions, shopItems,
+      students, setStudents,
+      shopItems, setShopItems,
+      transactions,
       addCoins, removeCoins, spendCoins,
       addShopItem, removeShopItem,
-      students, getStudents, refreshStudents,
+      createStudent, deleteStudent,
+      loadTransactions,
       getStudentCoins, getStudentTransactions,
-      loadTransactions, deleteStudent,
-      toast, showToast, loading,
+      toast, showToast,
     }}>
       {children}
     </AppContext.Provider>
