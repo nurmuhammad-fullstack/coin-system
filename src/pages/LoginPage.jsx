@@ -2,12 +2,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
+import { FaGraduationCap, FaChalkboardTeacher, FaUser, FaLock, FaEye, FaEyeSlash, FaCheck, FaTimes } from "react-icons/fa";
 
 export default function LoginPage() {
   const { login, showToast } = useApp();
   const navigate = useNavigate();
   const [role, setRole]         = useState("student");
-  const [email, setEmail]       = useState("");
+  const [loginInput, setLoginInput] = useState(""); // Changed from email to login
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
@@ -16,15 +17,15 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await login(email, password);
+      const result = await login(loginInput, password); // Send login instead of email
       if (!result.ok) {
-        showToast("❌ " + (result.message || "Wrong email or password"), "error");
+        showToast("❌ " + (result.message || "Wrong login or password"), "error");
         return;
       }
       showToast("✅ Welcome back!");
       navigate(result.role === "teacher" ? "/teacher/students" : "/student/home");
     } catch (err) {
-      showToast("❌ " + (err.message || "Wrong email or password"), "error");
+      showToast("❌ " + (err.message || "Wrong login or password"), "error");
     } finally {
       setLoading(false);
     }
@@ -44,24 +45,25 @@ export default function LoginPage() {
             {["student", "teacher"].map(r => (
               <button
                 key={r}
-                onClick={() => { setRole(r); setEmail(""); setPassword(""); }}
-                className={`flex-1 py-2.5 rounded-xl text-sm font-extrabold capitalize transition-all border-none cursor-pointer
+                onClick={() => { setRole(r); setLoginInput(""); setPassword(""); }}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-extrabold capitalize transition-all border-none cursor-pointer flex items-center justify-center gap-2
                   ${role === r ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 bg-transparent"}`}
               >
-                {r === "student" ? "🎓 Student" : "👨‍🏫 Teacher"}
+                {r === "student" ? <FaGraduationCap /> : <FaChalkboardTeacher />}
+                {r}
               </button>
             ))}
           </div>
 
           <form onSubmit={handleLogin} className="space-y-3">
-            {/* Email */}
+            {/* Login/Username */}
             <div className="flex items-center gap-3 bg-slate-50 focus-within:bg-white px-4 py-3.5 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
-              <span className="text-slate-400 text-base">✉️</span>
+              <FaUser className="text-slate-400" />
               <input
-                type="email"
-                placeholder={role === "student" ? "Your email address" : "Teacher email"}
-                value={email}
-                onChange={e => setEmail(e.target.value)}
+                type="text"
+                placeholder={role === "student" ? "Your login (username)" : "Teacher login"}
+                value={loginInput}
+                onChange={e => setLoginInput(e.target.value)}
                 className="flex-1 bg-transparent border-none outline-none font-medium text-slate-800 text-sm placeholder-slate-400"
                 required
               />
@@ -69,7 +71,7 @@ export default function LoginPage() {
 
             {/* Password */}
             <div className="flex items-center gap-3 bg-slate-50 focus-within:bg-white px-4 py-3.5 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
-              <span className="text-slate-400 text-base">🔒</span>
+              <FaLock className="text-slate-400" />
               <input
                 type={showPass ? "text" : "password"}
                 placeholder="Password"
@@ -81,9 +83,9 @@ export default function LoginPage() {
               <button
                 type="button"
                 onClick={() => setShowPass(!showPass)}
-                className="bg-transparent border-none font-bold text-slate-400 text-xs cursor-pointer"
+                className="bg-transparent border-none text-slate-400 hover:text-slate-600 text-xs transition-colors cursor-pointer"
               >
-                {showPass ? "HIDE" : "SHOW"}
+                {showPass ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
 
@@ -100,8 +102,8 @@ export default function LoginPage() {
           {/* Info for student */}
           {role === "student" && (
             <div className="bg-brand-50 mt-5 p-4 rounded-2xl">
-              <p className="font-bold text-brand-700 text-xs text-center">
-                🎓 Your login credentials were given by your teacher
+              <p className="flex justify-center items-center gap-2 font-bold text-brand-700 text-xs text-center">
+                <FaGraduationCap /> Your login credentials were given by your teacher
               </p>
             </div>
           )}
@@ -110,3 +112,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

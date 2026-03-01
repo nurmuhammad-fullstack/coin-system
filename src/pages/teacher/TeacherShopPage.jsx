@@ -2,6 +2,7 @@
 import { useState, useRef } from "react";
 import { useApp } from "../../context/AppContext";
 import { Modal } from "../../components/ui";
+import { FaPlus, FaTrash, FaStore, FaCamera, FaCoins, FaCheck, FaTimes } from "react-icons/fa";
 
 const EMOJIS     = ["🎒","📓","🍕","🍫","🎬","⚽","📝","💡","🌟","🎨","🎮","🧸","🎯","📚","🏆","🎁"];
 const CATEGORIES = ["School Supplies", "Snacks", "Academic", "Fun"];
@@ -56,7 +57,7 @@ export default function TeacherShopPage() {
         <h2 className="font-poppins font-black text-slate-800 text-2xl md:text-3xl">Manage Shop</h2>
         <button onClick={() => setShowModal(true)}
           className="flex items-center gap-1.5 bg-gradient-to-r from-brand-500 to-brand-600 shadow-brand-200 shadow-md hover:shadow-lg px-4 py-2.5 border-none rounded-full font-extrabold text-white text-xs transition-all cursor-pointer">
-          ➕ Add Item
+          <FaPlus /> Add Item
         </button>
       </div>
 
@@ -66,7 +67,7 @@ export default function TeacherShopPage() {
           <p className="opacity-80 mb-0.5 font-bold text-xs">Total Items</p>
           <p className="font-poppins font-black text-3xl">{shopItems.length}</p>
         </div>
-        <span className="opacity-80 text-5xl">🏪</span>
+        <FaStore className="opacity-80 text-5xl" />
       </div>
 
       {/* Category filter */}
@@ -105,19 +106,21 @@ export default function TeacherShopPage() {
               <div className="flex items-center gap-2 mt-0.5">
                 <span className="font-medium text-[10px] text-slate-400">{item.category}</span>
                 <span className="text-[10px] text-slate-300">•</span>
-                <span className="text-xs">🪙</span>
+                <FaCoins className="text-amber-500 text-xs" />
                 <span className="font-black text-brand-600 text-xs">{item.cost}</span>
               </div>
             </div>
             <button onClick={() => handleRemove(item._id || item.id, item.name)}
               className="flex flex-shrink-0 justify-center items-center bg-red-50 hover:bg-red-100 border-none rounded-xl w-8 h-8 text-red-500 text-sm transition-colors cursor-pointer">
-              🗑️
+              <FaTrash />
             </button>
           </div>
         ))}
         {items.length === 0 && (
           <div className="col-span-2 py-10 text-slate-400 text-center">
-            <div className="mb-2 text-4xl">🏪</div>
+            <div className="mb-2 text-4xl">
+              <FaStore className="inline-block text-slate-300" />
+            </div>
             <p className="font-medium text-sm">No items yet</p>
           </div>
         )}
@@ -139,13 +142,17 @@ export default function TeacherShopPage() {
                 <div className="flex items-center gap-3">
                   <img src={form.image} alt="preview" className="rounded-xl w-16 h-16 object-cover" />
                   <div className="text-left">
-                    <p className="font-bold text-slate-700 text-sm">Rasm yuklandi ✅</p>
+                    <p className="flex items-center gap-2 font-bold text-slate-700 text-sm">
+                      <FaCheck className="text-green-500" /> Rasm yuklandi
+                    </p>
                     <p className="text-slate-400 text-xs">O'zgartirish uchun bosing</p>
                   </div>
                 </div>
               ) : (
                 <div>
-                  <div className="mb-1 text-3xl">📸</div>
+                  <div className="mb-1 text-3xl">
+                    <FaCamera className="inline-block text-slate-400" />
+                  </div>
                   <p className="font-bold text-slate-500 text-sm">Rasm yuklash uchun bosing</p>
                   <p className="mt-0.5 text-slate-400 text-xs">JPG, PNG • max 2MB</p>
                 </div>
@@ -173,8 +180,8 @@ export default function TeacherShopPage() {
           {/* Rasmni olib tashlash */}
           {form.image && (
             <button onClick={() => setForm(f => ({ ...f, image: null, emoji: "🎁" }))}
-              className="bg-transparent mb-3 border-none font-bold text-red-400 text-xs cursor-pointer">
-              ✕ Rasmni olib tashlash
+              className="flex items-center gap-1 bg-transparent mb-3 border-none font-bold text-red-400 text-xs cursor-pointer">
+              <FaTimes /> Rasmni olib tashlash
             </button>
           )}
 
@@ -200,8 +207,8 @@ export default function TeacherShopPage() {
               Cancel
             </button>
             <button onClick={handleAdd} disabled={loading}
-              className="flex-[2] bg-gradient-to-r from-brand-500 to-brand-600 disabled:opacity-60 shadow-lg py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
-              {loading ? "Adding..." : "Add to Shop ✅"}
+              className="flex flex-[2] justify-center items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 disabled:opacity-60 shadow-lg py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
+              {loading ? "Adding..." : <>Add to Shop <FaCheck /></>}
             </button>
           </div>
         </Modal>
@@ -209,3 +216,4 @@ export default function TeacherShopPage() {
     </div>
   );
 }
+

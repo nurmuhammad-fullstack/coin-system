@@ -1,5 +1,7 @@
+// src/context/AppContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
 import { authAPI, studentsAPI, shopAPI, quizzesAPI } from "../services/api";
+import { FaCoins } from "react-icons/fa";
 
 const AppContext = createContext(null);
 
@@ -9,8 +11,8 @@ export function AppProvider({ children }) {
   const [shopItems, setShopItems]       = useState([]);
   const [transactions, setTransactions] = useState({});
   const [quizzes, setQuizzes]           = useState([]);
+  const [quizzesLoaded, setQuizzesLoaded] = useState(false);
   const [quizAttempts, setQuizAttempts] = useState([]);
-  const [quizzesLoaded, setQuizzesLoaded] = useState(false); // ✅ yuklandi flag
   const [toast, setToast]               = useState(null);
   const [loading, setLoading]           = useState(true);
 
@@ -30,30 +32,18 @@ export function AppProvider({ children }) {
     if (currentUser?.role === "teacher") {
       studentsAPI.getAll().then(setStudents).catch(console.error);
       shopAPI.getAll().then(setShopItems).catch(console.error);
-      quizzesAPI.getAll().then(setQuizzes).catch(console.error);
+      quizzesAPI.getAll().then((data) => { setQuizzes(data); setQuizzesLoaded(true); }).catch(console.error);
     }
-
     if (currentUser?.role === "student") {
+      // Load all students for leaderboard
+      studentsAPI.getAll().then(setStudents).catch(console.error);
       shopAPI.getAll().then(setShopItems).catch(console.error);
-      setQuizzesLoaded(false); // yuklanishni boshladi
-
-      quizzesAPI.getAll().then(data => {
-        setQuizzes(data);
-
-        // ✅ Faqat backend dan — _id si bor attempt larni oladi
-        const serverAttempts = data
-          .filter(q => q.attempt && q.attempt._id)
-          .map(q => ({
-            ...q.attempt,
-            quiz:      q._id || q.id,
-            quizId:    q._id || q.id,
-            student:   currentUser._id,
-            studentId: currentUser._id,
-          }));
-
-        setQuizAttempts(serverAttempts);
-        setQuizzesLoaded(true); // ✅ yuklandi
-      }).catch(console.error);
+      quizzesAPI.getAll().then((data) => { setQuizzes(data); setQuizzesLoaded(true); }).catch(console.error);
+      quizzesAPI.myAttempts().then(setQuizAttempts).catch(console.error);
+      // Load student transactions
+      studentsAPI.getTransactions(currentUser._id)
+        .then(txs => setTransactions(prev => ({ ...prev, [currentUser._id]: txs })))
+        .catch(console.error);
     }
   }, [currentUser]);
 
@@ -62,11 +52,15 @@ export function AppProvider({ children }) {
     setTimeout(() => setToast(null), 2800);
   };
 
-  const login = async (email, password) => {
-    const data = await authAPI.login(email, password);
-    localStorage.setItem("coined_token", data.token);
-    setCurrentUser(data.user);
-    return { ok: true, role: data.user.role };
+  const login = async (loginInput, password) => {
+    try {
+      const data = await authAPI.login(loginInput, password);
+      localStorage.setItem("coined_token", data.token);
+      setCurrentUser(data.user);
+      return { ok: true, role: data.user.role };
+    } catch (err) {
+      return { ok: false, message: err.message || "Login failed" };
+    }
   };
 
   const logout = () => {
@@ -77,7 +71,6 @@ export function AppProvider({ children }) {
     setTransactions({});
     setQuizzes([]);
     setQuizAttempts([]);
-    setQuizzesLoaded(false);
   };
 
   const createStudent = async (data) => {
@@ -164,50 +157,23 @@ export function AppProvider({ children }) {
     setQuizzes(prev => prev.filter(q => (q._id || q.id) !== id));
   };
 
-  const submitQuizAttempt = async (quizId, answers) => {
-    const formattedAnswers = answers.map(a => ({
-      questionIndex: a.questionIndex,
-      selected: a.selectedOption ?? a.selected,
-    }));
-
-    const res = await quizzesAPI.submitAttempt(quizId, formattedAnswers);
-
-    // ✅ Yangi attempt ni state ga qo'sh
-    const newAttempt = {
-      ...(res.attempt || {}),
-      _id:       res.attempt?._id || Date.now().toString(),
-      quiz:      quizId,
-      quizId:    quizId,
-      student:   currentUser._id,
-      studentId: currentUser._id,
-      score:     res.score,
-      coinsEarned: res.coinsEarned,
-    };
-
-    setQuizAttempts(prev => [...prev, newAttempt]);
-
-    // ✅ quizzes state ni ham yangilaymiz — quiz.attempt ni to'ldiramiz
-    setQuizzes(prev => prev.map(q =>
-      (q._id || q.id) === quizId ? { ...q, attempt: newAttempt } : q
-    ));
-
-    if (res.coinsEarned) {
+  // ✅ timeTaken ham yuboriladi backend ga
+  const submitQuizAttempt = async (quizId, answers, timeTaken = 0) => {
+    const res = await quizzesAPI.submitAttempt(quizId, answers, timeTaken);
+    setQuizAttempts(prev => [...prev, res.attempt || res]);
+    if (res.coinsEarned > 0) {
       setCurrentUser(prev => ({ ...prev, coins: (prev.coins || 0) + res.coinsEarned }));
     }
-
-    return {
-      score:          res.score,
-      coinsEarned:    res.coinsEarned,
-      correctCount:   res.correct,
-      totalQuestions: res.total,
-    };
+    return res;
   };
 
   if (loading) {
     return (
       <div className="flex justify-center items-center bg-slate-50 min-h-screen">
         <div className="text-center">
-          <div className="mb-3 text-5xl animate-bounce">🪙</div>
+          <div className="mb-3 text-5xl animate-bounce">
+            <FaCoins />
+          </div>
           <p className="font-bold text-slate-500">Loading CoinEd...</p>
         </div>
       </div>
@@ -225,9 +191,8 @@ export function AppProvider({ children }) {
       createStudent, deleteStudent,
       loadTransactions,
       getStudentCoins, getStudentTransactions,
-      quizzes, setQuizzes,
+      quizzes, setQuizzes, quizzesLoaded, setQuizzesLoaded,
       quizAttempts, setQuizAttempts,
-      quizzesLoaded,                          // ✅ export qilamiz
       createQuiz, updateQuiz, deleteQuiz,
       submitQuizAttempt,
       toast, showToast,

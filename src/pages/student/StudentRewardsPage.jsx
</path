@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useApp } from "../../context/AppContext";
 import { Modal } from "../../components/ui";
+import { FaCoins, FaShoppingCart, FaTimes, FaCheck, FaFire } from "react-icons/fa";
 
 const ALL_CATEGORIES = ["All Rewards", "School Supplies", "Snacks", "Academic", "Fun"];
 
@@ -29,10 +30,9 @@ export default function StudentRewardsPage() {
           <p className="mt-0.5 text-slate-500 text-xs">Trade your coins for perks</p>
         </div>
         <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1.5 rounded-full">
-          <span>🪙</span>
+          <FaCoins className="text-amber-500 text-sm" />
           <span className="font-black text-brand-700">{coins.toLocaleString()}</span>
         </div>
-      </div>
 
       {/* Category chips */}
       <div className="flex gap-2 pb-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
@@ -64,8 +64,9 @@ export default function StudentRewardsPage() {
               {/* Image area */}
               <div className="relative flex justify-center items-center bg-gradient-to-br from-brand-50 to-slate-50 h-24">
                 {item.tag && (
-                  <span className={`absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full text-white
+                  <span className={`absolute top-2 left-2 text-[9px] font-extrabold px-2 py-0.5 rounded-full text-white flex items-center gap-1
                     ${item.tag === "HOT" ? "bg-red-500" : "bg-brand-500"}`}>
+                    {item.tag === "HOT" && <FaFire className="text-[8px]" />}
                     {item.tag}
                   </span>
                 )}
@@ -78,12 +79,11 @@ export default function StudentRewardsPage() {
               <div className="p-3">
                 <p className="mb-1 font-extrabold text-slate-800 text-sm leading-tight">{item.name}</p>
                 <div className="flex items-center gap-1">
-                  <span className="text-sm">🪙</span>
+                  <FaCoins className="text-amber-500 text-sm" />
                   <span className={`text-sm font-black ${affordable ? "text-brand-600" : "text-red-500"}`}>
                     {item.cost.toLocaleString()}
                   </span>
                 </div>
-              </div>
             </div>
           );
         })}
@@ -102,7 +102,7 @@ export default function StudentRewardsPage() {
             <h3 className="mb-1 font-poppins font-black text-slate-800 text-xl">{selected.name}</h3>
             <p className="mb-4 text-slate-500 text-sm">{selected.desc}</p>
             <div className="flex justify-center items-center gap-2 mb-1">
-              <span className="text-2xl">🪙</span>
+              <FaCoins className="text-amber-500 text-2xl" />
               <span className={`font-poppins font-black text-3xl ${canBuy ? "text-brand-600" : "text-red-500"}`}>
                 {selected.cost.toLocaleString()}
               </span>
@@ -118,15 +118,14 @@ export default function StudentRewardsPage() {
               <button
                 onClick={handleBuy}
                 disabled={!canBuy}
-                className={`flex-[2] py-3 rounded-2xl font-extrabold text-sm text-white border-none cursor-pointer transition-all
+                className={`flex-[2] py-3 rounded-2xl font-extrabold text-sm text-white border-none cursor-pointer transition-all flex items-center justify-center gap-2
                   ${canBuy
                     ? "bg-gradient-to-r from-brand-500 to-brand-600 shadow-lg shadow-brand-200 hover:shadow-xl"
                     : "bg-slate-200 text-slate-400 cursor-not-allowed"}`}
               >
-                {canBuy ? "Buy Now 🛒" : "Not enough coins"}
+                {canBuy ? <><FaShoppingCart /> Buy Now</> : "Not enough coins"}
               </button>
             </div>
-          </div>
         </Modal>
       )}
     </div>

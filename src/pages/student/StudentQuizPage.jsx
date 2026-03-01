@@ -1,5 +1,5 @@
 // src/pages/student/StudentQuizPage.jsx
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
@@ -8,29 +8,32 @@ const TOTAL_SECONDS = 12 * 60;
 export default function StudentQuizPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser, quizzes, quizAttempts, quizzesLoaded, submitQuizAttempt } = useApp();
+  const { currentUser, quizzes, quizAttempts, submitQuizAttempt } = useApp();
 
-  // ✅ FIX: quizzes yuklanguncha kutamiz
-  
   const quiz      = quizzes?.find(q => (q._id || q.id) === id);
   const questions = quiz?.questions || [];
   const totalQ    = questions.length;
 
+  const alreadyDone = quizAttempts?.find(
+    a => (a.quizId === id || a.quiz === id || (a.quiz?._id || a.quiz) === id) &&
+         (a.studentId === currentUser?._id || a.student === currentUser?._id || (a.student?._id || a.student) === currentUser?._id)
+  );
 
-
-  const [phase, setPhase]           = useState("intro");
-  const [current, setCurrent]       = useState(0);
-  const [answers, setAnswers]       = useState([]);
-  const [selected, setSelected]     = useState(null);
-  const [confirmed, setConfirmed]   = useState(false);
-  const [timeLeft, setTimeLeft]     = useState(TOTAL_SECONDS);
-  const [result, setResult]         = useState(null);
+  const [phase, setPhase]         = useState("intro");
+  const [current, setCurrent]     = useState(0);
+  const [answers, setAnswers]     = useState([]);
+  const [selected, setSelected]   = useState(null);
+  const [confirmed, setConfirmed] = useState(false);
+  const [timeLeft, setTimeLeft]   = useState(TOTAL_SECONDS);
+  const [result, setResult]       = useState(null);
   const [submitting, setSubmitting] = useState(false);
-  const [animDir, setAnimDir]       = useState("in");
+  const [animDir, setAnimDir]     = useState("in");
+  const startTimeRef              = useRef(null);
 
-  // ── Timer ──────────────────────────────────────
+  // Timer
   useEffect(() => {
     if (phase !== "quiz") return;
+    if (!startTimeRef.current) startTimeRef.current = Date.now();
     if (timeLeft <= 0) { handleSubmit(answers); return; }
     const t = setInterval(() => setTimeLeft(p => p - 1), 1000);
     return () => clearInterval(t);
@@ -51,6 +54,7 @@ export default function StudentQuizPage() {
     setConfirmed(true);
     const newAnswers = [...answers, selected];
     setAnswers(newAnswers);
+
     setTimeout(() => {
       if (current + 1 >= totalQ) {
         handleSubmit(newAnswers);
@@ -69,30 +73,60 @@ export default function StudentQuizPage() {
   const handleSubmit = useCallback(async (finalAnswers) => {
     if (submitting) return;
     setSubmitting(true);
+    const timeTaken = startTimeRef.current
+      ? Math.round((Date.now() - startTimeRef.current) / 1000)
+      : 0;
     try {
-      const res = await submitQuizAttempt(id, finalAnswers);
+      // Backend expects: { answers: [0,2,1,...], timeTaken: 120 }
+      const res = await submitQuizAttempt(id, finalAnswers, timeTaken);
       setResult(res);
       setPhase("result");
-    } catch {
+    } catch (err) {
+      // Agar "Already completed" xatosi kelsa
+      if (err.message?.includes("Already completed")) {
+        navigate("/student/tests");
+        return;
+      }
+      // Local hisoblash (fallback)
       let correct = 0;
       finalAnswers.forEach((ans, i) => {
-        if (questions[i] && ans === questions[i].correct) correct++;
+        if (questions[i] && Number(ans) === Number(questions[i].correct)) correct++;
       });
-      const score       = Math.round((correct / totalQ) * 100);
+      const score = Math.round((correct / totalQ) * 100);
       const coinsEarned = Math.round((quiz?.maxCoins || 20) * score / 100);
       setResult({ score, correct, total: totalQ, coinsEarned });
       setPhase("result");
     } finally {
       setSubmitting(false);
     }
-  }, [id, submitting, submitQuizAttempt, questions, totalQ, quiz]);
+  }, [id, submitting, submitQuizAttempt, questions, totalQ, quiz, navigate]);
 
-  // ✅ FIX: quizzes yuklanmagan bo'lsa — loading ko'rsat, redirect qilma
-  if (!quizzesLoaded) return (
-    <div className="flex justify-center items-center bg-slate-50 min-h-screen">
-      <div className="text-center">
-        <div className="mb-3 text-5xl animate-bounce">🪙</div>
-        <p className="font-bold text-slate-500">Yuklanmoqda...</p>
+  // ── Already done ────────────────────────────────
+  if (alreadyDone) return (
+    <div className="flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 min-h-screen">
+      <div className="bg-white shadow-2xl shadow-indigo-100 rounded-3xl w-full max-w-md overflow-hidden">
+        <div className="bg-gradient-to-r from-slate-400 to-slate-500 p-8 text-white text-center">
+          <div className="mb-3 text-6xl">🔒</div>
+          <h1 className="font-black text-2xl">Allaqachon yechilgan</h1>
+          <p className="mt-1 text-slate-200 text-sm">Bu testni faqat bir marta yechish mumkin</p>
+        </div>
+        <div className="p-6">
+          <div className="flex items-center gap-4 bg-slate-50 mb-4 p-4 rounded-2xl">
+            <div className="text-3xl">🏆</div>
+            <div>
+              <p className="font-black text-slate-700">Sizning natijangiz</p>
+              <p className="font-black text-indigo-600 text-2xl">{alreadyDone.score ?? "–"}%</p>
+            </div>
+            <div className="ml-auto text-right">
+              <p className="font-medium text-slate-400 text-xs">Coins</p>
+              <p className="font-black text-amber-500">+{alreadyDone.coinsEarned ?? 0} 🪙</p>
+            </div>
+          </div>
+          <button onClick={() => navigate("/student/tests")}
+            className="bg-gradient-to-r from-indigo-500 to-purple-600 shadow-indigo-200 shadow-lg py-4 border-none rounded-2xl w-full font-black text-white active:scale-95 transition-all cursor-pointer">
+            Testlarga qaytish →
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -109,8 +143,6 @@ export default function StudentQuizPage() {
       </div>
     </div>
   );
-
-
 
   /* ── INTRO ── */
   if (phase === "intro") return (
@@ -140,17 +172,17 @@ export default function StudentQuizPage() {
                 </div>
               ))}
             </div>
+
             <div className="flex items-start gap-3 bg-red-50 mb-5 p-4 border border-red-100 rounded-2xl">
               <span className="mt-0.5 text-xl">⚠️</span>
               <div>
                 <p className="font-black text-red-600 text-sm">Faqat 1 marta!</p>
-                <p className="mt-0.5 font-medium text-red-400 text-xs">Testni boshlaganingizdan keyin qaytib bo'lmaydi. Diqqat bilan yoching.</p>
+                <p className="mt-0.5 font-medium text-red-400 text-xs">Testni boshlaganingizdan keyin qaytib bo'lmaydi.</p>
               </div>
             </div>
-            <button
-              onClick={() => setPhase("quiz")}
-              className="bg-gradient-to-r from-indigo-500 to-purple-600 shadow-indigo-200 shadow-lg hover:shadow-xl py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer"
-            >
+
+            <button onClick={() => setPhase("quiz")}
+              className="bg-gradient-to-r from-indigo-500 to-purple-600 shadow-indigo-200 shadow-lg py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer">
               🚀 Testni Boshlash
             </button>
             <button onClick={() => navigate("/student/tests")}
@@ -165,7 +197,7 @@ export default function StudentQuizPage() {
 
   /* ── RESULT ── */
   if (phase === "result") {
-    const score       = result?.score ?? 0;
+    const score = result?.score ?? 0;
     const coinsEarned = result?.coinsEarned ?? 0;
     const grade = score >= 90 ? { emoji: "🏆", label: "A'lo!", color: "from-yellow-400 to-amber-500" }
                 : score >= 70 ? { emoji: "🌟", label: "Yaxshi!", color: "from-green-400 to-emerald-500" }
@@ -183,9 +215,9 @@ export default function StudentQuizPage() {
             <div className="p-6">
               <div className="gap-3 grid grid-cols-3 mb-5">
                 {[
-                  { icon: "✅", label: "To'g'ri",   value: result?.correct ?? "-",                                    color: "bg-green-50 text-green-600" },
-                  { icon: "❌", label: "Noto'g'ri", value: (result?.total ?? totalQ) - (result?.correct ?? 0),        color: "bg-red-50 text-red-500"     },
-                  { icon: "🪙", label: "Coins",     value: `+${coinsEarned}`,                                         color: "bg-amber-50 text-amber-600" },
+                  { icon: "✅", label: "To'g'ri", value: result?.correct ?? "-", color: "bg-green-50 text-green-600" },
+                  { icon: "❌", label: "Noto'g'ri", value: (result?.total ?? totalQ) - (result?.correct ?? 0), color: "bg-red-50 text-red-500" },
+                  { icon: "🪙", label: "Coins", value: `+${coinsEarned}`, color: "bg-amber-50 text-amber-600" },
                 ].map(s => (
                   <div key={s.label} className={`${s.color} rounded-2xl p-3 text-center`}>
                     <div className="mb-1 text-xl">{s.icon}</div>
@@ -201,10 +233,8 @@ export default function StudentQuizPage() {
                   <p className="font-medium text-amber-500 text-xs">Hisobingizga qo'shildi!</p>
                 </div>
               </div>
-              <button
-                onClick={() => navigate("/student/tests")}
-                className="bg-gradient-to-r from-indigo-500 to-purple-600 shadow-indigo-200 shadow-lg py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer"
-              >
+              <button onClick={() => navigate("/student/tests")}
+                className="bg-gradient-to-r from-indigo-500 to-purple-600 shadow-indigo-200 shadow-lg py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer">
                 Testlarga qaytish →
               </button>
             </div>
@@ -235,6 +265,7 @@ export default function StudentQuizPage() {
             <span className="font-black text-[9px] text-slate-700">{formatTime(timeLeft)}</span>
           </div>
         </div>
+
         <div className="flex-1">
           <div className="flex justify-between mb-1.5">
             <span className="max-w-[120px] font-bold text-slate-500 text-xs truncate">{quiz.title}</span>
@@ -245,6 +276,7 @@ export default function StudentQuizPage() {
               style={{ width: `${(current / totalQ) * 100}%`, background: "linear-gradient(to right, #6366f1, #a855f7)" }} />
           </div>
         </div>
+
         <div className="flex-shrink-0 bg-amber-50 px-3 py-1.5 rounded-full">
           <span className="font-black text-amber-600 text-xs">🪙{quiz.maxCoins}</span>
         </div>
@@ -266,8 +298,8 @@ export default function StudentQuizPage() {
           style={{ opacity: animDir === "out" ? 0 : 1, transition: "all 0.3s ease" }}>
           {q.options.map((opt, oi) => {
             const isSelected = selected === oi;
-            const isCorrect  = confirmed && oi === q.correct;
-            const isWrong    = confirmed && isSelected && oi !== q.correct;
+            const isCorrect  = confirmed && oi === Number(q.correct);
+            const isWrong    = confirmed && isSelected && oi !== Number(q.correct);
             let bg = "bg-white border-slate-200 text-slate-700";
             if (isCorrect)       bg = "bg-green-500 border-green-500 text-white shadow-lg shadow-green-200";
             else if (isWrong)    bg = "bg-red-400 border-red-400 text-white";
@@ -300,14 +332,15 @@ export default function StudentQuizPage() {
             </button>
           ) : (
             <div className={`w-full py-4 rounded-2xl font-black text-base text-center ${
-              answers[answers.length - 1] === q.correct ? "bg-green-50 text-green-600" : "bg-red-50 text-red-500"
+              Number(selected) === Number(q.correct) ? "bg-green-50 text-green-600" : "bg-red-50 text-red-500"
             }`}>
-              {answers[answers.length - 1] === q.correct ? "✅ To'g'ri!" : "❌ Noto'g'ri!"}
+              {Number(selected) === Number(q.correct) ? "✅ To'g'ri!" : "❌ Noto'g'ri!"}
               {current + 1 < totalQ && <span className="opacity-60 ml-2 text-xs">Keyingi savol...</span>}
             </div>
           )}
         </div>
 
+        {/* Dot progress */}
         <div className="flex flex-wrap justify-center gap-2 mt-4">
           {questions.map((_, i) => (
             <div key={i} className="rounded-full w-2 h-2 transition-all"

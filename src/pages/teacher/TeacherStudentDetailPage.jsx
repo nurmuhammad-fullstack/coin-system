@@ -33,7 +33,7 @@ export default function TeacherStudentDetailPage() {
   // Load transactions on mount
   useEffect(() => {
     if (id && id !== "undefined") loadTransactions(id);
-  }, [id]);
+  }, [id, loadTransactions]);
 
   if (!id || id === "undefined") {
     return (

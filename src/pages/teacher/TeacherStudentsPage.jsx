@@ -3,9 +3,10 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { Avatar, SectionLabel, Modal } from "../../components/ui";
+import { FaPlus, FaUsers, FaCoins, FaTrophy, FaMedal, FaUserPlus, FaCheck, FaExclamationTriangle } from "react-icons/fa";
 
 const COLORS = ["#22c55e","#3b82f6","#f97316","#8b5cf6","#ef4444","#eab308","#06b6d4","#ec4899"];
-const BLANK  = { name: "", email: "", password: "", class: "", color: "#22c55e" };
+const BLANK  = { login: "", name: "", email: "", password: "", class: "", color: "#22c55e" };
 
 export default function TeacherStudentsPage() {
   const { students, getStudentCoins, createStudent, showToast } = useApp();
@@ -26,8 +27,8 @@ export default function TeacherStudentsPage() {
   const topCoins = filtered.length ? getStudentCoins(filtered[0]?._id) : 0;
 
   const handleCreate = async () => {
-    if (!form.name || !form.email || !form.password) {
-      showToast("❌ Fill in all required fields", "error"); return;
+    if (!form.login || !form.name || !form.password) {
+      showToast("❌ Fill in login, name and password", "error"); return;
     }
     setLoading(true);
     try {
@@ -35,7 +36,7 @@ export default function TeacherStudentsPage() {
         ...form,
         avatar: form.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
       });
-      setCreatedInfo({ email: form.email, password: form.password, name: form.name });
+      setCreatedInfo({ login: form.login, password: form.password, name: form.name });
       setShowModal(false);
       setForm({ ...BLANK });
       showToast("✅ " + form.name + " added!");
@@ -46,7 +47,7 @@ export default function TeacherStudentsPage() {
     }
   };
 
-  const medals = ["🥇","🥈","🥉"];
+  const medals = [<FaMedal className="text-yellow-500" />, <FaMedal className="text-gray-400" />, <FaMedal className="text-amber-600" />];
 
   return (
     <div className="space-y-5 p-5 md:p-0">
@@ -61,7 +62,7 @@ export default function TeacherStudentsPage() {
           onClick={() => setShowModal(true)}
           className="flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 shadow-brand-200 shadow-lg hover:shadow-xl px-5 py-2.5 border-none rounded-full font-extrabold text-white text-sm transition-all cursor-pointer"
         >
-          ➕ Add Student
+          <FaPlus /> Add Student
         </button>
       </div>
 
@@ -97,7 +98,9 @@ export default function TeacherStudentsPage() {
         <SectionLabel>Leaderboard — tap to manage</SectionLabel>
         {filtered.length === 0 ? (
           <div className="py-12 text-slate-400 text-center">
-            <div className="mb-3 text-5xl">👥</div>
+            <div className="mb-3 text-5xl">
+              <FaUsers className="inline-block text-slate-300" />
+            </div>
             <p className="font-bold text-sm">No students yet</p>
             <p className="mt-1 text-xs">Tap "Add Student" to get started</p>
           </div>
@@ -113,7 +116,7 @@ export default function TeacherStudentsPage() {
                   <p className="text-slate-400 text-xs">Class {s.class}</p>
                 </div>
                 <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full">
-                  <span className="text-sm">🪙</span>
+                  <FaCoins className="text-amber-500 text-sm" />
                   <span className="font-black text-brand-700 text-sm">{getStudentCoins(s._id).toLocaleString()}</span>
                 </div>
               </div>
@@ -125,12 +128,17 @@ export default function TeacherStudentsPage() {
       {/* Add Student Modal */}
       {showModal && (
         <Modal onClose={() => { setShowModal(false); setForm({...BLANK}); }}>
-          <h3 className="mb-5 font-poppins font-black text-slate-800 text-xl">➕ Add New Student</h3>
+          <h3 className="flex items-center gap-2 mb-5 font-poppins font-black text-slate-800 text-xl">
+            <FaUserPlus /> Add New Student
+          </h3>
           <div className="space-y-3 mb-4">
+            <input type="text" placeholder="Login (username) *" value={form.login}
+              onChange={e => setForm(f => ({...f, login: e.target.value}))}
+              className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
             <input type="text" placeholder="Full name *" value={form.name}
               onChange={e => setForm(f => ({...f, name: e.target.value}))}
               className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
-            <input type="email" placeholder="Email address *" value={form.email}
+            <input type="email" placeholder="Email address (optional)" value={form.email}
               onChange={e => setForm(f => ({...f, email: e.target.value}))}
               className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
             <input type="text" placeholder="Password * (e.g. student123)" value={form.password}
@@ -156,8 +164,8 @@ export default function TeacherStudentsPage() {
               Cancel
             </button>
             <button onClick={handleCreate} disabled={loading}
-              className="flex-[2] bg-gradient-to-r from-brand-500 to-brand-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
-              {loading ? "Creating..." : "Create Student ✅"}
+              className="flex flex-[2] justify-center items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
+              {loading ? "Creating..." : <>Create Student <FaCheck /></>}
             </button>
           </div>
         </Modal>
@@ -167,20 +175,24 @@ export default function TeacherStudentsPage() {
       {createdInfo && (
         <Modal onClose={() => setCreatedInfo(null)}>
           <div className="text-center">
-            <div className="mb-3 text-5xl">🎉</div>
+            <div className="mb-3 text-5xl">
+              <FaTrophy className="inline-block text-amber-500" />
+            </div>
             <h3 className="mb-1 font-poppins font-black text-xl">Student Created!</h3>
             <p className="mb-5 text-slate-500 text-sm">Share these with <b>{createdInfo.name}</b></p>
             <div className="space-y-3 bg-slate-50 mb-4 p-4 rounded-2xl text-left">
-              <div className="flex justify-between"><span className="font-bold text-slate-400 text-xs">EMAIL</span><span className="font-extrabold text-sm">{createdInfo.email}</span></div>
+              <div className="flex justify-between"><span className="font-bold text-slate-400 text-xs">LOGIN</span><span className="font-extrabold text-sm">{createdInfo.login}</span></div>
               <div className="bg-slate-200 h-px" />
               <div className="flex justify-between"><span className="font-bold text-slate-400 text-xs">PASSWORD</span><span className="font-extrabold text-sm">{createdInfo.password}</span></div>
             </div>
             <div className="bg-amber-50 mb-4 p-3 rounded-xl">
-              <p className="font-bold text-amber-700 text-xs">⚠️ Save these! Password won't be shown again.</p>
+              <p className="flex justify-center items-center gap-2 font-bold text-amber-700 text-xs">
+                <FaExclamationTriangle /> Save these! Password won't be shown again.
+              </p>
             </div>
             <button onClick={() => setCreatedInfo(null)}
-              className="bg-gradient-to-r from-brand-500 to-brand-600 py-3 border-none rounded-2xl w-full font-extrabold text-white text-sm cursor-pointer">
-              Got it ✅
+              className="flex justify-center items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 py-3 border-none rounded-2xl w-full font-extrabold text-white text-sm cursor-pointer">
+              Got it <FaCheck />
             </button>
           </div>
         </Modal>
@@ -188,3 +200,4 @@ export default function TeacherStudentsPage() {
     </div>
   );
 }
+

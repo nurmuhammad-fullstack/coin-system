@@ -1,13 +1,21 @@
 // src/pages/student/StudentWalletPage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { Card, TxItem, SectionLabel } from "../../components/ui";
+import { FaCoins, FaArrowUp, FaArrowDown, FaSyncAlt, FaChartLine, FaChartPie } from "react-icons/fa";
 
 const FILTERS = ["All", "Earned", "Spent"];
 
 export default function StudentWalletPage() {
-  const { currentUser, getStudentCoins, getStudentTransactions } = useApp();
+  const { currentUser, getStudentCoins, getStudentTransactions, loadTransactions } = useApp();
   const [filter, setFilter] = useState("All");
+
+  // Load transactions on mount
+  useEffect(() => {
+    if (currentUser?._id) {
+      loadTransactions(currentUser._id);
+    }
+  }, [currentUser?._id, loadTransactions]);
 
   const coins = getStudentCoins(currentUser._id);
   const allTxs = getStudentTransactions(currentUser._id);
@@ -22,14 +30,16 @@ export default function StudentWalletPage() {
     <div className="space-y-4 p-5">
       <div className="flex justify-between items-center">
         <h2 className="font-poppins font-black text-slate-800 text-2xl">My Wallet</h2>
-        <span className="text-xl cursor-pointer">🔄</span>
+        <button className="bg-transparent border-none text-xl cursor-pointer">
+          <FaSyncAlt className="text-slate-400 hover:text-slate-600" />
+        </button>
       </div>
 
       {/* Balance card */}
       <Card className="p-6 text-center">
         <p className="mb-2 font-extrabold text-slate-400 text-xs uppercase tracking-wider">Total Balance</p>
         <div className="flex justify-center items-center gap-2 mb-1">
-          <span className="text-2xl">🪙</span>
+          <FaCoins className="text-amber-500 text-2xl" />
           <span className="font-poppins font-black text-slate-800 text-5xl">{coins.toLocaleString()}</span>
         </div>
         <div className="flex justify-center items-center gap-1.5 mt-2">
@@ -41,12 +51,16 @@ export default function StudentWalletPage() {
       {/* Stats */}
       <div className="gap-3 grid grid-cols-2">
         <Card className="p-4 text-center">
-          <p className="mb-1 text-2xl">📈</p>
+          <p className="mb-1 text-2xl">
+            <FaArrowUp className="text-brand-500" />
+          </p>
           <p className="font-black text-brand-600 text-xl">+{totalEarned.toLocaleString()}</p>
           <p className="mt-0.5 font-bold text-slate-400 text-xs">Total Earned</p>
         </Card>
         <Card className="p-4 text-center">
-          <p className="mb-1 text-2xl">📉</p>
+          <p className="mb-1 text-2xl">
+            <FaArrowDown className="text-red-500" />
+          </p>
           <p className="font-black text-red-500 text-xl">-{totalSpent.toLocaleString()}</p>
           <p className="mt-0.5 font-bold text-slate-400 text-xs">Total Spent</p>
         </Card>
@@ -70,7 +84,7 @@ export default function StudentWalletPage() {
       <Card className="p-4">
         <SectionLabel>Transactions</SectionLabel>
         {txs.length === 0 && <p className="py-6 text-slate-400 text-sm text-center">No transactions found</p>}
-        {txs.map(tx => <TxItem key={tx.id} tx={tx} />)}
+        {txs.map(tx => <TxItem key={tx._id || tx.id} tx={tx} />)}
       </Card>
     </div>
   );
