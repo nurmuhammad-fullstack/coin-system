@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { useApp } from "../../context/AppContext";
 import { Card, TxItem, SectionLabel } from "../../components/ui";
-import { FaCoins, FaArrowUp, FaArrowDown, FaSyncAlt, FaChartLine, FaChartPie } from "react-icons/fa";
+import { FaCoins, FaArrowUp, FaArrowDown, FaSyncAlt } from "react-icons/fa";
 
 const FILTERS = ["All", "Earned", "Spent"];
 

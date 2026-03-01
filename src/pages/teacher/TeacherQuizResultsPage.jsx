@@ -1,13 +1,11 @@
 // src/pages/teacher/TeacherQuizResultsPage.jsx
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useApp } from "../../context/AppContext";
 import { Avatar } from "../../components/ui";
 
 export default function TeacherQuizResultsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { showToast } = useApp();
 
   const [quiz, setQuiz]         = useState(null);
   const [results, setResults]   = useState([]);
@@ -29,7 +27,7 @@ export default function TeacherQuizResultsPage() {
       finally { setLoading(false); }
     };
     load();
-  }, [id]);
+  }, [id, API, token]);
 
   if (loading) return <div className="p-6 font-bold text-slate-400 text-center">Yuklanmoqda...</div>;
   if (!quiz)   return <div className="p-6 font-bold text-slate-400 text-center">Test topilmadi</div>;

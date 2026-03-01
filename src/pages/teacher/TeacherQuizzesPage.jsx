@@ -21,7 +21,7 @@ export default function TeacherQuizzesPage() {
   const token = localStorage.getItem("coined_token");
   const API   = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
 
-  useEffect(() => { loadQuizzes(); }, []);
+  useEffect(() => { loadQuizzes(); }, [loadQuizzes]);
 
   const loadQuizzes = async () => {
     try {

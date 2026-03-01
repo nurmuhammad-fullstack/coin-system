@@ -1,5 +1,5 @@
 // src/pages/student/StudentQuizPage.jsx
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
@@ -11,7 +11,7 @@ export default function StudentQuizPage() {
   const { currentUser, quizzes, quizAttempts, submitQuizAttempt } = useApp();
 
   const quiz      = quizzes?.find(q => (q._id || q.id) === id);
-  const questions = quiz?.questions || [];
+  const questions = useMemo(() => quiz?.questions || [], [quiz]);
   const totalQ    = questions.length;
 
   const alreadyDone = quizAttempts?.find(
@@ -29,15 +29,7 @@ export default function StudentQuizPage() {
   const [submitting, setSubmitting] = useState(false);
   const [animDir, setAnimDir]     = useState("in");
   const startTimeRef              = useRef(null);
-
-  // Timer
-  useEffect(() => {
-    if (phase !== "quiz") return;
-    if (!startTimeRef.current) startTimeRef.current = Date.now();
-    if (timeLeft <= 0) { handleSubmit(answers); return; }
-    const t = setInterval(() => setTimeLeft(p => p - 1), 1000);
-    return () => clearInterval(t);
-  }, [phase, timeLeft]);
+  const handleSubmitRef           = useRef(null);
 
   const formatTime = (s) =>
     `${String(Math.floor(s / 60)).padStart(2,"0")}:${String(s % 60).padStart(2,"0")}`;
@@ -57,7 +49,7 @@ export default function StudentQuizPage() {
 
     setTimeout(() => {
       if (current + 1 >= totalQ) {
-        handleSubmit(newAnswers);
+        if (handleSubmitRef.current) handleSubmitRef.current(newAnswers);
       } else {
         setAnimDir("out");
         setTimeout(() => {
@@ -99,7 +91,24 @@ export default function StudentQuizPage() {
     } finally {
       setSubmitting(false);
     }
-  }, [id, submitting, submitQuizAttempt, questions, totalQ, quiz, navigate]);
+  }, [id, submitQuizAttempt, questions, totalQ, quiz, navigate, submitting]);
+
+  // Store handleSubmit in ref for use in useEffect
+  useEffect(() => {
+    handleSubmitRef.current = handleSubmit;
+  }, [handleSubmit]);
+
+  // Timer
+  useEffect(() => {
+    if (phase !== "quiz") return;
+    if (!startTimeRef.current) startTimeRef.current = Date.now();
+    if (timeLeft <= 0) { 
+      if (handleSubmitRef.current) handleSubmitRef.current(answers); 
+      return; 
+    }
+    const t = setInterval(() => setTimeLeft(p => p - 1), 1000);
+    return () => clearInterval(t);
+  }, [phase, timeLeft, answers]);
 
   // ── Already done ────────────────────────────────
   if (alreadyDone) return (
@@ -354,3 +363,4 @@ export default function StudentQuizPage() {
     </div>
   );
 }
+

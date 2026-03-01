@@ -4,7 +4,7 @@ import { useApp } from "../../context/AppContext";
 import { Card, SectionLabel } from "../../components/ui";
 
 export default function StudentTestsPage() {
-  const { currentUser, quizzes = [], quizzesLoaded } = useApp();
+  const { quizzes = [], quizzesLoaded } = useApp();
   const navigate = useNavigate();
 
   const availableQuizzes = quizzes.filter(q => q.active !== false && q.isActive !== false);

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
-import { FaGraduationCap, FaChalkboardTeacher, FaUser, FaLock, FaEye, FaEyeSlash, FaCheck, FaTimes } from "react-icons/fa";
+import { FaGraduationCap, FaChalkboardTeacher, FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LoginPage() {
   const { login, showToast } = useApp();
