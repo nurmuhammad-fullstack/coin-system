@@ -23,7 +23,7 @@ const request = async (method, path, body = null) => {
 
 // ── Auth ─────────────────────────────────────────
 export const authAPI = {
-  login:         (login, password) => request('POST', '/auth/login', { login, password }),
+  login:         (email, password) => request('POST', '/auth/login', { email, password }),
   register:      (data)            => request('POST', '/auth/register', data),
   me:            ()                => request('GET',  '/auth/me'),
   createStudent: (data)            => request('POST', '/auth/create-student', data),
@@ -31,6 +31,7 @@ export const authAPI = {
 
 // ── Students ─────────────────────────────────────
 export const studentsAPI = {
+  getLeaderboard: ()              => request('GET',    '/students/leaderboard'),
   getAll:          ()              => request('GET',    '/students'),
   getOne:          (id)            => request('GET',    `/students/${id}`),
   deleteOne:       (id)            => request('DELETE', `/students/${id}`),
@@ -56,7 +57,8 @@ export const quizzesAPI = {
   create:        (data)                    => request('POST',   '/quizzes', data),
   update:        (id, data)                => request('PUT',    `/quizzes/${id}`, data),
   delete:        (id)                      => request('DELETE', `/quizzes/${id}`),
-  getAttempts:   (id)                      => request('GET',    `/quizzes/${id}/attempts`),
+  getResults:    (id)                      => request('GET',    `/quizzes/${id}/results`),
+  toggle:        (id)                      => request('PATCH',  `/quizzes/${id}/toggle`),
   submitAttempt: (id, answers, timeTaken)  => request('POST',   `/quizzes/${id}/submit`, { answers, timeTaken }),
   myAttempts:    ()                        => request('GET',    '/quizzes/my-attempts'),
 };

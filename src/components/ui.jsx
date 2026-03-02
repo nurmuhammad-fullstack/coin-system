@@ -79,6 +79,7 @@ export function SectionLabel({ children }) {
 /* ── Transaction item ── */
 export function TxItem({ tx }) {
   const isEarn = tx.type === "earn";
+  const amount = isEarn ? tx.amount : Math.abs(tx.amount);
   const date = tx.date || (tx.createdAt ? new Date(tx.createdAt).toLocaleDateString() : "Unknown");
   return (
     <div className="flex items-center gap-3 py-3 border-slate-50 last:border-0 border-b">
@@ -90,7 +91,7 @@ export function TxItem({ tx }) {
         <p className="text-slate-400 text-xs">{date}</p>
       </div>
       <span className={`text-sm font-black ${isEarn ? "text-brand-600" : "text-red-500"}`}>
-        {isEarn ? "+" : ""}{tx.amount}
+        {isEarn ? "+" : "-"}{amount}
       </span>
     </div>
   );

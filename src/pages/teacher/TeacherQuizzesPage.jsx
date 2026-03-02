@@ -1,5 +1,5 @@
 // src/pages/teacher/TeacherQuizzesPage.jsx
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 
@@ -21,15 +21,15 @@ export default function TeacherQuizzesPage() {
   const token = localStorage.getItem("coined_token");
   const API   = process.env.REACT_APP_API_URL || "http://localhost:5001/api";
 
-  useEffect(() => { loadQuizzes(); }, [loadQuizzes]);
-
-  const loadQuizzes = async () => {
+  const loadQuizzes = useCallback(async () => {
     try {
       const r = await fetch(`${API}/quizzes`, { headers: { Authorization:`Bearer ${token}` } });
       const d = await r.json();
       setQuizzes(Array.isArray(d) ? d : []);
     } catch(e){ console.error(e); } finally { setLoading(false); }
-  };
+  }, [API, token]);
+
+  useEffect(() => { loadQuizzes(); }, [loadQuizzes]);
 
   const addQ    = () => { if(form.questions.length>=20) return; setForm(f=>({...f, questions:[...f.questions, JSON.parse(JSON.stringify(BLANK_Q))]})); };
   const removeQ = (i) => { if(form.questions.length===1) return; setForm(f=>({...f, questions:f.questions.filter((_,idx)=>idx!==i)})); };
@@ -182,15 +182,29 @@ export default function TeacherQuizzesPage() {
             </div>
           </div>
 
-          <Section label="Coin jadvali">
-            <div className="space-y-2">
-              {[100,80,60,40,0].map(pct=>(
+          <Section label="🪙 Coin jadvali">
+            <div className="space-y-3">
+              {[
+                { pct: 100, icon: '🪙', color: 'bg-gradient-to-br from-amber-300 to-amber-500', shadow: 'shadow-amber-200' },
+                { pct: 80, icon: '🪙', color: 'bg-gradient-to-br from-slate-300 to-slate-400', shadow: 'shadow-slate-200' },
+                { pct: 60, icon: '🪙', color: 'bg-gradient-to-br from-orange-300 to-orange-400', shadow: 'shadow-orange-200' },
+                { pct: 40, icon: '🪙', color: 'bg-gradient-to-br from-indigo-300 to-indigo-400', shadow: 'shadow-indigo-200' },
+                { pct: 0, icon: '🪙', color: 'bg-gradient-to-br from-slate-200 to-slate-300', shadow: 'shadow-slate-100' }
+              ].map(({ pct, icon, color, shadow }) => (
                 <div key={pct} className="flex items-center gap-3">
-                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 overflow-hidden">
-                    <div className="bg-indigo-500 rounded-full h-full transition-all" style={{width:`${pct}%`}} />
+                  <span className={`w-7 h-7 flex items-center justify-center ${color} ${shadow} rounded-full text-sm shadow-lg`}>
+                    {icon}
+                  </span>
+                  <div className="flex-1 bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                    <div 
+                      className="bg-gradient-to-r from-indigo-500 to-violet-500 rounded-full h-full transition-all" 
+                      style={{ width: `${pct}%` }} 
+                    />
                   </div>
-                  <span className="w-8 font-bold text-[11px] text-slate-400 text-right">{pct}%</span>
-                  <span className="w-10 font-black text-[11px] text-violet-600 text-right">🪙{Math.round(form.maxCoins*pct/100)}</span>
+                  <span className="w-8 font-bold text-[10px] text-slate-400 text-right">{pct}%</span>
+                  <span className="w-12 font-black text-amber-500 text-xs text-right">
+                    🪙 {Math.round(form.maxCoins * pct / 100)}
+                  </span>
                 </div>
               ))}
             </div>

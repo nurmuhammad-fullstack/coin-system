@@ -19,10 +19,23 @@ export default function TeacherQuizResultsPage() {
       try {
         const [qRes, rRes] = await Promise.all([
           fetch(`${API}/quizzes/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
-          fetch(`${API}/quizzes/${id}/attempts`, { headers: { Authorization: `Bearer ${token}` } }),
+          fetch(`${API}/quizzes/${id}/results`, { headers: { Authorization: `Bearer ${token}` } }),
         ]);
-        setQuiz(await qRes.json());
-        setResults(await rRes.json());
+        const quizData = await qRes.json();
+        const resultsData = await rRes.json();
+        
+        // Check if responses are OK
+        if (!qRes.ok) {
+          console.error('Quiz fetch error:', quizData);
+          return;
+        }
+        if (!rRes.ok) {
+          console.error('Results fetch error:', resultsData);
+          setResults([]);
+        } else {
+          setResults(resultsData);
+        }
+        setQuiz(quizData);
       } catch (err) { console.error(err); }
       finally { setLoading(false); }
     };

@@ -8,7 +8,7 @@ export default function LoginPage() {
   const { login, showToast } = useApp();
   const navigate = useNavigate();
   const [role, setRole]         = useState("student");
-  const [loginInput, setLoginInput] = useState(""); // Changed from email to login
+  const [email, setEmail] = useState(""); // Changed from login to email
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading]   = useState(false);
@@ -17,7 +17,7 @@ export default function LoginPage() {
     e.preventDefault();
     setLoading(true);
     try {
-      const result = await login(loginInput, password); // Send login instead of email
+      const result = await login(email, password); // Send email instead of login
       if (!result.ok) {
         showToast("❌ " + (result.message || "Wrong login or password"), "error");
         return;
@@ -45,7 +45,7 @@ export default function LoginPage() {
             {["student", "teacher"].map(r => (
               <button
                 key={r}
-                onClick={() => { setRole(r); setLoginInput(""); setPassword(""); }}
+                onClick={() => { setRole(r); setEmail(""); setPassword(""); }}
                 className={`flex-1 py-2.5 rounded-xl text-sm font-extrabold capitalize transition-all border-none cursor-pointer flex items-center justify-center gap-2
                   ${role === r ? "bg-white text-slate-800 shadow-sm" : "text-slate-400 bg-transparent"}`}
               >
@@ -56,14 +56,14 @@ export default function LoginPage() {
           </div>
 
           <form onSubmit={handleLogin} className="space-y-3">
-            {/* Login/Username */}
+            {/* Email */}
             <div className="flex items-center gap-3 bg-slate-50 focus-within:bg-white px-4 py-3.5 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
               <FaUser className="text-slate-400" />
               <input
-                type="text"
-                placeholder={role === "student" ? "Your login (username)" : "Teacher login"}
-                value={loginInput}
-                onChange={e => setLoginInput(e.target.value)}
+                type="email"
+                placeholder={role === "student" ? "Your email" : "Teacher email"}
+                value={email}
+                onChange={e => setEmail(e.target.value)}
                 className="flex-1 bg-transparent border-none outline-none font-medium text-slate-800 text-sm placeholder-slate-400"
                 required
               />

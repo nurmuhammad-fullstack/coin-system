@@ -21,28 +21,22 @@ export default function TeacherLayout() {
     <>
       <Toast />
 
-      {/* MOBILE */}
-      <div className="md:hidden flex justify-center items-center bg-slate-50 p-4 min-h-screen">
-        <div className="flex flex-col bg-white shadow-2xl shadow-slate-300 border border-slate-100 rounded-[2.5rem] w-full max-w-sm h-[780px] overflow-hidden">
-          <div className="flex flex-shrink-0 justify-between items-center px-6 pt-3 pb-1 font-bold text-slate-400 text-xs">
-            <span>9:41</span>
-            <div className="flex items-center gap-1"><span>●●●</span><span>WiFi</span><span>🔋</span></div>
-          </div>
-          <div className="flex-1 overflow-x-hidden overflow-y-auto" style={{ scrollbarWidth: "none" }}>
-            <Outlet />
-          </div>
-          <nav className="flex flex-shrink-0 bg-white border-slate-100 border-t">
-            {TABS.map(t => (
-              <button key={t.id} onClick={() => navigate(t.path)}
-                className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-extrabold border-none bg-transparent cursor-pointer transition-colors
-                  ${active === t.id ? "text-indigo-500" : "text-slate-400"}`}>
-                <t.icon className="text-xl leading-tight" />
-                {t.label}
-                {active === t.id && <div className="bg-indigo-500 rounded-full w-1 h-1" />}
-              </button>
-            ))}
-          </nav>
+      {/* MOBILE - Full screen */}
+      <div className="md:hidden flex flex-col bg-slate-50 min-h-screen">
+        <div className="flex-1 overflow-x-hidden overflow-y-auto" style={{ scrollbarWidth: "none" }}>
+          <Outlet />
         </div>
+        <nav className="bottom-0 z-50 sticky flex bg-white pb-safe border-slate-100 border-t">
+          {TABS.map(t => (
+            <button key={t.id} onClick={() => navigate(t.path)}
+              className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-extrabold border-none bg-transparent cursor-pointer transition-colors
+                ${active === t.id ? "text-indigo-500" : "text-slate-400"}`}>
+              <t.icon className="text-xl leading-tight" />
+              {t.label}
+              {active === t.id && <div className="bg-indigo-500 rounded-full w-1 h-1" />}
+            </button>
+          ))}
+        </nav>
       </div>
 
       {/* DESKTOP */}

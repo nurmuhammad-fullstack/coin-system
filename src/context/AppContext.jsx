@@ -35,8 +35,8 @@ export function AppProvider({ children }) {
       quizzesAPI.getAll().then((data) => { setQuizzes(data); setQuizzesLoaded(true); }).catch(console.error);
     }
     if (currentUser?.role === "student") {
-      // Load all students for leaderboard
-      studentsAPI.getAll().then(setStudents).catch(console.error);
+      // Use leaderboard endpoint for students (no teacher required)
+      studentsAPI.getLeaderboard().then(setStudents).catch(console.error);
       shopAPI.getAll().then(setShopItems).catch(console.error);
       quizzesAPI.getAll().then((data) => { setQuizzes(data); setQuizzesLoaded(true); }).catch(console.error);
       quizzesAPI.myAttempts().then(setQuizAttempts).catch(console.error);
@@ -52,9 +52,9 @@ export function AppProvider({ children }) {
     setTimeout(() => setToast(null), 2800);
   };
 
-  const login = async (loginInput, password) => {
+  const login = async (email, password) => {
     try {
-      const data = await authAPI.login(loginInput, password);
+      const data = await authAPI.login(email, password);
       localStorage.setItem("coined_token", data.token);
       setCurrentUser(data.user);
       return { ok: true, role: data.user.role };

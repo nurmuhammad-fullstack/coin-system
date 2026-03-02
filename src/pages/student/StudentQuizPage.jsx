@@ -69,17 +69,14 @@ export default function StudentQuizPage() {
       ? Math.round((Date.now() - startTimeRef.current) / 1000)
       : 0;
     try {
-      // Backend expects: { answers: [0,2,1,...], timeTaken: 120 }
       const res = await submitQuizAttempt(id, finalAnswers, timeTaken);
       setResult(res);
       setPhase("result");
     } catch (err) {
-      // Agar "Already completed" xatosi kelsa
       if (err.message?.includes("Already completed")) {
         navigate("/student/tests");
         return;
       }
-      // Local hisoblash (fallback)
       let correct = 0;
       finalAnswers.forEach((ans, i) => {
         if (questions[i] && Number(ans) === Number(questions[i].correct)) correct++;
@@ -93,12 +90,10 @@ export default function StudentQuizPage() {
     }
   }, [id, submitQuizAttempt, questions, totalQ, quiz, navigate, submitting]);
 
-  // Store handleSubmit in ref for use in useEffect
   useEffect(() => {
     handleSubmitRef.current = handleSubmit;
   }, [handleSubmit]);
 
-  // Timer
   useEffect(() => {
     if (phase !== "quiz") return;
     if (!startTimeRef.current) startTimeRef.current = Date.now();
@@ -112,7 +107,7 @@ export default function StudentQuizPage() {
 
   // ── Already done ────────────────────────────────
   if (alreadyDone) return (
-    <div className="flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 min-h-screen">
+    <div className="z-50 fixed inset-0 flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
       <div className="bg-white shadow-2xl shadow-indigo-100 rounded-3xl w-full max-w-md overflow-hidden">
         <div className="bg-gradient-to-r from-slate-400 to-slate-500 p-8 text-white text-center">
           <div className="mb-3 text-6xl">🔒</div>
@@ -141,8 +136,8 @@ export default function StudentQuizPage() {
   );
 
   if (!quiz) return (
-    <div className="flex justify-center items-center bg-slate-50 min-h-screen">
-      <div className="text-center">
+    <div className="z-50 fixed inset-0 flex justify-center items-center bg-slate-50">
+      <div className="p-4 text-center">
         <div className="mb-3 text-5xl">😕</div>
         <p className="font-bold text-slate-500">Test topilmadi</p>
         <button onClick={() => navigate("/student/tests")}
@@ -155,7 +150,7 @@ export default function StudentQuizPage() {
 
   /* ── INTRO ── */
   if (phase === "intro") return (
-    <div className="flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 min-h-screen">
+    <div className="z-50 fixed inset-0 flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
       <div className="w-full max-w-md">
         <div className="bg-white shadow-2xl shadow-indigo-100 rounded-3xl overflow-hidden">
           <div className="relative bg-gradient-to-r from-indigo-500 to-purple-600 p-8 overflow-hidden text-white text-center">
@@ -213,7 +208,7 @@ export default function StudentQuizPage() {
                 : score >= 50 ? { emoji: "👍", label: "O'rtacha", color: "from-blue-400 to-indigo-500" }
                 : { emoji: "💪", label: "Harakat qiling!", color: "from-rose-400 to-pink-500" };
     return (
-      <div className="flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-6 min-h-screen">
+      <div className="z-50 fixed inset-0 flex justify-center items-center bg-gradient-to-br from-indigo-50 via-white to-purple-50 p-4">
         <div className="w-full max-w-md">
           <div className="bg-white shadow-2xl shadow-indigo-100 rounded-3xl overflow-hidden">
             <div className={`bg-gradient-to-r ${grade.color} p-8 text-white text-center`}>
@@ -258,9 +253,9 @@ export default function StudentQuizPage() {
   const OPT_LABELS = ["A","B","C","D"];
 
   return (
-    <div className="flex flex-col bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
-      {/* TOP BAR */}
-      <div className="top-0 z-10 sticky flex items-center gap-4 bg-white shadow-sm px-4 py-3 border-slate-100 border-b">
+    <div className="z-50 fixed inset-0 flex flex-col bg-gradient-to-br from-slate-50 to-indigo-50 overflow-y-auto">
+      {/* TOP BAR - Desktop only */}
+      <div className="hidden md:flex items-center gap-4 bg-white shadow-sm px-4 py-3 border-slate-100 border-b">
         <div className="relative flex-shrink-0 w-12 h-12">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
             <circle cx="40" cy="40" r="36" fill="none" stroke="#f1f5f9" strokeWidth="6" />
@@ -291,19 +286,30 @@ export default function StudentQuizPage() {
         </div>
       </div>
 
-      {/* QUESTION */}
-      <div className="flex flex-col flex-1 mx-auto px-4 py-6 w-full max-w-2xl">
-        <div className="bg-white shadow-indigo-100 shadow-lg mb-5 p-6 rounded-3xl"
+      {/* QUESTION - Full screen on mobile */}
+      <div className="flex flex-col flex-1 mx-auto px-3 py-4 w-full md:max-w-2xl">
+        {/* Mobile timer */}
+        <div className="md:hidden flex justify-between items-center bg-white shadow-sm mb-4 p-3 rounded-2xl">
+          <div className="flex items-center gap-2">
+            <span className={`font-black text-lg ${timerPct > 25 ? 'text-green-500' : 'text-red-500'}`}>
+              {formatTime(timeLeft)}
+            </span>
+          </div>
+          <span className="font-bold text-slate-500 text-sm">{current + 1}/{totalQ}</span>
+          <span className="font-black text-amber-500">🪙{quiz.maxCoins}</span>
+        </div>
+
+        <div className="bg-white shadow-indigo-100 shadow-lg mb-4 p-4 rounded-2xl"
           style={{ opacity: animDir === "out" ? 0 : 1, transform: animDir === "out" ? "translateX(-30px)" : "translateX(0)", transition: "all 0.3s ease" }}>
-          <div className="flex items-center gap-3 mb-4">
+          <div className="flex items-center gap-3 mb-3">
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1.5 rounded-xl font-black text-white text-xs">
               Savol {current + 1}
             </div>
           </div>
-          <p className="font-black text-slate-800 text-lg md:text-xl leading-snug">{q.question}</p>
+          <p className="font-black text-lg leading-snug">{q.question}</p>
         </div>
 
-        <div className="space-y-3"
+        <div className="space-y-2"
           style={{ opacity: animDir === "out" ? 0 : 1, transition: "all 0.3s ease" }}>
           {q.options.map((opt, oi) => {
             const isSelected = selected === oi;
@@ -315,23 +321,23 @@ export default function StudentQuizPage() {
             else if (isSelected) bg = "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-200";
             return (
               <button key={oi} onClick={() => handleSelect(oi)} disabled={confirmed}
-                className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 font-bold text-left transition-all cursor-pointer ${bg}`}
+                className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 font-bold text-left transition-all cursor-pointer ${bg}`}
                 style={{ transform: isSelected && !confirmed ? "scale(1.02)" : "scale(1)" }}>
-                <span className={`w-9 h-9 rounded-xl flex items-center justify-center text-sm font-black flex-shrink-0 ${
+                <span className={`w-8 h-8 rounded-lg flex items-center justify-center text-sm font-black flex-shrink-0 ${
                   isCorrect || isWrong || isSelected ? "bg-white/20" : "bg-slate-100 text-slate-500"
                 }`}>
                   {isCorrect ? "✓" : isWrong ? "✕" : OPT_LABELS[oi]}
                 </span>
-                <span className="flex-1 text-sm md:text-base">{opt}</span>
+                <span className="flex-1 text-sm">{opt}</span>
               </button>
             );
           })}
         </div>
 
-        <div className="mt-6">
+        <div className="mt-4">
           {!confirmed ? (
             <button onClick={handleConfirm} disabled={selected === null}
-              className="disabled:opacity-30 py-4 border-none rounded-2xl w-full font-black text-base transition-all cursor-pointer"
+              className="disabled:opacity-30 py-3 border-none rounded-xl w-full font-black text-base transition-all cursor-pointer"
               style={{
                 background: selected !== null ? "linear-gradient(to right, #6366f1, #a855f7)" : "#e2e8f0",
                 color: selected !== null ? "white" : "#94a3b8",
@@ -340,7 +346,7 @@ export default function StudentQuizPage() {
               Tasdiqlash →
             </button>
           ) : (
-            <div className={`w-full py-4 rounded-2xl font-black text-base text-center ${
+            <div className={`w-full py-3 rounded-xl font-black text-base text-center ${
               Number(selected) === Number(q.correct) ? "bg-green-50 text-green-600" : "bg-red-50 text-red-500"
             }`}>
               {Number(selected) === Number(q.correct) ? "✅ To'g'ri!" : "❌ Noto'g'ri!"}
@@ -350,9 +356,9 @@ export default function StudentQuizPage() {
         </div>
 
         {/* Dot progress */}
-        <div className="flex flex-wrap justify-center gap-2 mt-4">
+        <div className="flex flex-wrap justify-center gap-1.5 mt-3">
           {questions.map((_, i) => (
-            <div key={i} className="rounded-full w-2 h-2 transition-all"
+            <div key={i} className="rounded-full w-1.5 h-1.5 transition-all"
               style={{
                 background: i < current ? "#22c55e" : i === current ? "#6366f1" : "#e2e8f0",
                 transform: i === current ? "scale(1.4)" : "scale(1)"
