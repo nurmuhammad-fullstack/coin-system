@@ -55,7 +55,7 @@ export default function NotificationsPage() {
           {unreadCount > 0 && (
             <button 
               onClick={markAllNotificationsAsRead}
-              className="flex items-center gap-1 bg-brand-50 hover:bg-brand-100 px-3 py-1.5 rounded-xl font-bold text-brand-600 text-xs transition-colors"
+              className="flex items-center gap-1 bg-brand-50 hover:bg-brand-100 dark:bg-brand-900/30 dark:hover:bg-brand-800 px-3 py-1.5 rounded-xl font-bold text-brand-600 dark:text-brand-400 text-xs transition-colors"
             >
               <FaCheck /> Mark all read
             </button>
@@ -63,7 +63,7 @@ export default function NotificationsPage() {
           {notifications.length > 0 && (
             <button 
               onClick={clearAllNotifications}
-              className="flex items-center gap-1 bg-red-50 hover:bg-red-100 px-3 py-1.5 rounded-xl font-bold text-red-500 text-xs transition-colors"
+              className="flex items-center gap-1 bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-800 px-3 py-1.5 rounded-xl font-bold text-red-500 text-xs transition-colors"
             >
               <FaTrash /> Clear all
             </button>
@@ -71,7 +71,7 @@ export default function NotificationsPage() {
         </div>
       </div>
 
-      <h1 className="flex items-center gap-2 font-poppins font-black text-slate-800 text-2xl">
+      <h1 className="flex items-center gap-2 font-poppins font-black text-slate-800 dark:text-white text-2xl">
         <FaBell className="text-brand-500" /> Notifications
         {unreadCount > 0 && (
           <span className="bg-red-500 px-2 py-0.5 rounded-full text-white text-xs">{unreadCount}</span>
@@ -82,8 +82,8 @@ export default function NotificationsPage() {
       {notifications.length === 0 ? (
         <Card className="p-8 text-center">
           <div className="mb-3 text-5xl">🔔</div>
-          <p className="font-bold text-slate-500">No notifications yet</p>
-          <p className="mt-1 text-slate-400 text-sm">We'll notify you when something happens!</p>
+          <p className="font-bold text-slate-500 dark:text-slate-400">No notifications yet</p>
+          <p className="mt-1 text-slate-400 dark:text-slate-500 text-sm">We'll notify you when something happens!</p>
         </Card>
       ) : (
         <div className="space-y-3">
@@ -91,21 +91,21 @@ export default function NotificationsPage() {
             <Card 
               key={notification._id}
               onClick={() => handleNotificationClick(notification)}
-              className={`p-4 ${!notification.read ? 'bg-brand-50 border-l-4 border-brand-500' : ''}`}
+              className={`p-4 ${!notification.read ? 'bg-brand-50 dark:bg-brand-900/20 border-l-4 border-brand-500' : ''}`}
             >
               <div className="flex gap-3">
-                <div className="flex flex-shrink-0 justify-center items-center bg-white shadow-sm rounded-full w-10 h-10 text-xl">
+                <div className="flex flex-shrink-0 justify-center items-center bg-white dark:bg-slate-700 shadow-sm rounded-full w-10 h-10 text-xl">
                   {getIcon(notification.type)}
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex justify-between items-start gap-2">
-                    <p className="font-bold text-slate-800 text-sm">{notification.title}</p>
+                    <p className="font-bold text-slate-800 dark:text-white text-sm">{notification.title}</p>
                     {!notification.read && (
                       <span className="flex-shrink-0 bg-brand-500 mt-1.5 rounded-full w-2 h-2" />
                     )}
                   </div>
-                  <p className="mt-0.5 text-slate-600 text-sm line-clamp-2">{notification.message}</p>
-                  <p className="mt-2 text-slate-400 text-xs">{formatTime(notification.createdAt)}</p>
+                  <p className="mt-0.5 text-slate-600 dark:text-slate-300 text-sm line-clamp-2">{notification.message}</p>
+                  <p className="mt-2 text-slate-400 dark:text-slate-500 text-xs">{formatTime(notification.createdAt)}</p>
                 </div>
               </div>
             </Card>

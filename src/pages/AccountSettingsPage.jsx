@@ -158,22 +158,22 @@ export default function AccountSettingsPage() {
   };
 
   return (
-    <div className="bg-gradient-to-br from-slate-50 via-slate-100 to-slate-50 p-4 md:p-8 min-h-screen">
+    <div className="bg-gradient-to-br from-slate-50 dark:from-slate-900 via-slate-100 dark:via-slate-800 to-slate-50 dark:to-slate-900 p-4 md:p-8 min-h-screen">
       {/* Mobile Header */}
       <div className="md:hidden">
         <BackButton onClick={() => navigate(-1)} label="Back" />
-        <h1 className="font-poppins font-black text-slate-800 text-2xl">Account Settings</h1>
+        <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">Account Settings</h1>
       </div>
 
       {/* Desktop Header */}
       <div className="hidden md:flex justify-between items-center mb-8">
         <div>
-          <h1 className="font-poppins font-black text-slate-800 text-3xl">Account Settings</h1>
-          <p className="mt-1 text-slate-500 text-sm">Manage your profile and security settings</p>
+          <h1 className="font-poppins font-black text-slate-800 dark:text-white text-3xl">Account Settings</h1>
+          <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm">Manage your profile and security settings</p>
         </div>
         <button 
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 bg-white hover:bg-slate-50 px-4 py-2 border border-slate-200 rounded-xl font-bold text-slate-600 text-sm transition-colors cursor-pointer"
+          className="flex items-center gap-2 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-xl font-bold text-slate-600 dark:text-slate-300 text-sm transition-colors cursor-pointer"
         >
           ← Back
         </button>
@@ -184,14 +184,14 @@ export default function AccountSettingsPage() {
         {/* Left Column - Profile */}
         <div className="space-y-6 col-span-2">
           {/* Profile Info Card */}
-          <Card className="shadow-lg shadow-slate-100 p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex justify-center items-center bg-brand-100 rounded-xl w-10 h-10">
-                <FaUser className="text-brand-500" />
+              <div className="flex justify-center items-center bg-brand-100 dark:bg-brand-900/50 rounded-xl w-10 h-10">
+                <FaUser className="text-brand-500 dark:text-brand-400" />
               </div>
               <div>
-                <h2 className="font-poppins font-bold text-slate-800 text-lg">Profile Information</h2>
-                <p className="text-slate-400 text-xs">Update your personal details</p>
+                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">Profile Information</h2>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">Update your personal details</p>
               </div>
             </div>
             
@@ -202,7 +202,7 @@ export default function AccountSettingsPage() {
                   <img 
                     src={avatarPreview?.startsWith('data:') ? avatarPreview : avatarPreview} 
                     alt="Profile" 
-                    className="shadow-lg border-4 border-white rounded-full w-24 h-24 object-cover"
+                    className="border-4 border-white dark:border-slate-700 rounded-full w-24 h-24 object-cover"
                   />
                 ) : (
                   <Avatar user={{ avatar: previewDisplay, color }} size={100} />
@@ -235,14 +235,14 @@ export default function AccountSettingsPage() {
                 <button 
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-2 bg-brand-100 hover:bg-brand-200 px-3 py-1.5 rounded-lg font-bold text-brand-600 text-xs transition-colors cursor-pointer"
+                  className="flex items-center gap-2 bg-brand-100 hover:bg-brand-200 dark:bg-brand-900/50 dark:hover:bg-brand-800 px-3 py-1.5 rounded-lg font-bold text-brand-600 dark:text-brand-400 text-xs transition-colors cursor-pointer"
                 >
                   <FaImage /> Upload Photo
                 </button>
                 <button 
                   onClick={handleUseInitials}
                   disabled={uploading}
-                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-slate-600 text-xs transition-colors cursor-pointer"
+                  className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 rounded-lg font-bold text-slate-600 dark:text-slate-300 text-xs transition-colors cursor-pointer"
                 >
                   <FaUser /> Use Initials
                 </button>
@@ -251,35 +251,35 @@ export default function AccountSettingsPage() {
 
             <div className="gap-4 grid grid-cols-2">
               <div>
-                <label className="block mb-2 font-bold text-slate-600 text-sm">Full Name</label>
+                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className="px-4 py-3 border border-slate-200 focus:border-transparent rounded-xl focus:ring-2 focus:ring-brand-500 w-full font-bold text-slate-700 text-sm transition-all"
+                  className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 />
               </div>
               
               <div>
-                <label className="block mb-2 font-bold text-slate-600 text-sm">Email Address</label>
+                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Email Address</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="px-4 py-3 border border-slate-200 focus:border-transparent rounded-xl focus:ring-2 focus:ring-brand-500 w-full font-bold text-slate-700 text-sm transition-all"
+                  className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 />
               </div>
             </div>
 
             <div className="mt-4">
-              <label className="block mb-3 font-bold text-slate-600 text-sm">Avatar Color</label>
+              <label className="block mb-3 font-bold text-slate-600 dark:text-slate-300 text-sm">Avatar Color</label>
               <div className="flex gap-3">
                 {COLORS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`w-10 h-10 rounded-full transition-all cursor-pointer ${color === c ? "ring-4 ring-offset-2 ring-slate-300 scale-110" : "hover:scale-105 hover:shadow-md"}`}
+                    className={`w-10 h-10 rounded-full transition-all cursor-pointer ${color === c ? "ring-4 ring-offset-2 ring-slate-300 dark:ring-slate-600 scale-110" : "hover:scale-105"}`}
                     style={{ backgroundColor: c }}
                   />
                 ))}
@@ -289,55 +289,55 @@ export default function AccountSettingsPage() {
             <button
               onClick={handleProfileUpdate}
               disabled={loading}
-              className="bg-gradient-to-r from-brand-500 hover:from-brand-600 disabled:from-slate-300 to-brand-600 hover:to-brand-700 disabled:to-slate-400 shadow-brand-200 shadow-lg hover:shadow-brand-300 mt-6 px-6 py-3 border-none rounded-xl w-full font-extrabold text-white text-sm transition-all cursor-pointer"
+              className="bg-brand-500 hover:bg-brand-600 disabled:bg-slate-300 mt-6 px-6 py-3 border-none rounded-xl w-full font-extrabold text-white text-sm transition-colors cursor-pointer"
             >
               {loading ? "Saving..." : "Save Changes"}
             </button>
           </Card>
 
           {/* Change Password Card */}
-          <Card className="shadow-lg shadow-slate-100 p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex justify-center items-center bg-amber-100 rounded-xl w-10 h-10">
-                <FaLock className="text-amber-500" />
+              <div className="flex justify-center items-center bg-amber-100 dark:bg-amber-900/50 rounded-xl w-10 h-10">
+                <FaLock className="text-amber-500 dark:text-amber-400" />
               </div>
               <div>
-                <h2 className="font-poppins font-bold text-slate-800 text-lg">Change Password</h2>
-                <p className="text-slate-400 text-xs">Update your security credentials</p>
+                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">Change Password</h2>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">Update your security credentials</p>
               </div>
             </div>
             
             <form onSubmit={handlePasswordChange} className="space-y-4">
               <div>
-                <label className="block mb-2 font-bold text-slate-600 text-sm">Current Password</label>
+                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Current Password</label>
                 <input
                   type="password"
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
-                  className="px-4 py-3 border border-slate-200 focus:border-transparent rounded-xl focus:ring-2 focus:ring-amber-500 w-full font-bold text-slate-700 text-sm transition-all"
+                  className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                   placeholder="Enter current password"
                 />
               </div>
               
               <div className="gap-4 grid grid-cols-2">
                 <div>
-                  <label className="block mb-2 font-bold text-slate-600 text-sm">New Password</label>
+                  <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">New Password</label>
                   <input
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="px-4 py-3 border border-slate-200 focus:border-transparent rounded-xl focus:ring-2 focus:ring-amber-500 w-full font-bold text-slate-700 text-sm transition-all"
+                    className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                     placeholder="Enter new password"
                   />
                 </div>
                 
                 <div>
-                  <label className="block mb-2 font-bold text-slate-600 text-sm">Confirm Password</label>
+                  <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Confirm Password</label>
                   <input
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="px-4 py-3 border border-slate-200 focus:border-transparent rounded-xl focus:ring-2 focus:ring-amber-500 w-full font-bold text-slate-700 text-sm transition-all"
+                    className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                     placeholder="Confirm new password"
                   />
                 </div>
@@ -346,7 +346,7 @@ export default function AccountSettingsPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="bg-gradient-to-r from-slate-800 hover:from-slate-700 disabled:from-slate-300 to-slate-900 hover:to-slate-800 disabled:to-slate-400 shadow-lg shadow-slate-200 hover:shadow-slate-300 mt-2 px-6 py-3 border-none rounded-xl w-full font-extrabold text-white text-sm transition-all cursor-pointer"
+                className="bg-slate-800 hover:bg-slate-900 disabled:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-500 mt-2 px-6 py-3 border-none rounded-xl w-full font-extrabold text-white dark:text-slate-100 text-sm transition-colors cursor-pointer"
               >
                 {loading ? "Changing..." : "Change Password"}
               </button>
@@ -357,44 +357,44 @@ export default function AccountSettingsPage() {
         {/* Right Column - Account Info */}
         <div className="space-y-6">
           {/* Account Summary */}
-          <Card className="shadow-lg shadow-slate-100 p-6">
+          <Card className="p-6">
             <div className="flex items-center gap-3 mb-6">
-              <div className="flex justify-center items-center bg-indigo-100 rounded-xl w-10 h-10">
-                <FaInfoCircle className="text-indigo-500" />
+              <div className="flex justify-center items-center bg-indigo-100 dark:bg-indigo-900/50 rounded-xl w-10 h-10">
+                <FaInfoCircle className="text-indigo-500 dark:text-indigo-400" />
               </div>
               <div>
-                <h2 className="font-poppins font-bold text-slate-800 text-lg">Account Info</h2>
-                <p className="text-slate-400 text-xs">Your account details</p>
+                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">Account Info</h2>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">Your account details</p>
               </div>
             </div>
             
             <div className="space-y-4">
-              <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl">
-                <span className="font-medium text-slate-500 text-sm">Role</span>
-                <span className="bg-white shadow-sm px-3 py-1 rounded-lg font-bold text-slate-700 capitalize">{currentUser?.role}</span>
+              <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
+                <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">Role</span>
+                <span className="bg-white dark:bg-slate-600 px-3 py-1 rounded-lg font-bold text-slate-700 dark:text-slate-200 capitalize">{currentUser?.role}</span>
               </div>
               
               {currentUser?.class && (
-                <div className="flex justify-between items-center bg-slate-50 p-3 rounded-xl">
-                  <span className="font-medium text-slate-500 text-sm">Class</span>
-                  <span className="bg-white shadow-sm px-3 py-1 rounded-lg font-bold text-slate-700">{currentUser.class}</span>
+                <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
+                  <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">Class</span>
+                  <span className="bg-white dark:bg-slate-600 px-3 py-1 rounded-lg font-bold text-slate-700 dark:text-slate-200">{currentUser.class}</span>
                 </div>
               )}
               
-              <div className="flex justify-between items-center bg-gradient-to-r from-amber-50 to-orange-50 p-3 rounded-xl">
+              <div className="flex justify-between items-center bg-amber-50 dark:bg-amber-900/30 p-3 rounded-xl">
                 <div className="flex items-center gap-2">
                   <FaCoins className="text-amber-500" />
-                  <span className="font-medium text-slate-500 text-sm">Coins</span>
+                  <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">Coins</span>
                 </div>
-                <span className="font-black text-brand-600 text-lg">{currentUser?.coins?.toLocaleString()}</span>
+                <span className="font-black text-brand-600 dark:text-brand-400 text-lg">{currentUser?.coins?.toLocaleString()}</span>
               </div>
             </div>
           </Card>
 
           {/* Quick Stats */}
-          <Card className="bg-gradient-to-br from-brand-50 to-brand-100 shadow-lg shadow-slate-100 p-6">
-            <h3 className="mb-4 font-poppins font-bold text-slate-800">Quick Tips</h3>
-            <ul className="space-y-3 text-slate-600 text-sm">
+          <Card className="bg-brand-50 dark:bg-brand-900/30 p-6">
+            <h3 className="mb-4 font-poppins font-bold text-slate-800 dark:text-white">Quick Tips</h3>
+            <ul className="space-y-3 text-slate-600 dark:text-slate-300 text-sm">
               <li className="flex items-start gap-2">
                 <span className="mt-0.5 text-brand-500">•</span>
                 Keep your profile information up to date
@@ -416,7 +416,7 @@ export default function AccountSettingsPage() {
       <div className="md:hidden space-y-4 p-5">
         <BackButton onClick={() => navigate(-1)} label="Back" />
         
-        <h1 className="font-poppins font-black text-slate-800 text-2xl">Account Settings</h1>
+        <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">Account Settings</h1>
 
         {/* Profile Info */}
         <Card className="p-5">
@@ -429,7 +429,7 @@ export default function AccountSettingsPage() {
                 <img 
                   src={avatarPreview?.startsWith('data:') ? avatarPreview : avatarPreview} 
                   alt="Profile" 
-                  className="shadow-lg border-4 border-white rounded-full w-20 h-20 object-cover"
+                  className="border-4 border-white dark:border-slate-700 rounded-full w-20 h-20 object-cover"
                 />
               ) : (
                 <Avatar user={{ avatar: previewDisplay, color }} size={80} />
@@ -456,13 +456,13 @@ export default function AccountSettingsPage() {
               <button 
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="flex items-center gap-1 bg-brand-100 hover:bg-brand-200 px-3 py-1.5 rounded-lg font-bold text-brand-600 text-xs transition-colors cursor-pointer"
+                className="flex items-center gap-1 bg-brand-100 hover:bg-brand-200 dark:bg-brand-900/50 dark:hover:bg-brand-800 px-3 py-1.5 rounded-lg font-bold text-brand-600 dark:text-brand-400 text-xs transition-colors cursor-pointer"
               >
                 <FaImage /> Upload
               </button>
               <button 
                 onClick={handleUseInitials}
-                className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg font-bold text-slate-600 text-xs transition-colors cursor-pointer"
+                className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 rounded-lg font-bold text-slate-600 dark:text-slate-300 text-xs transition-colors cursor-pointer"
               >
                 <FaUser /> Initials
               </button>
@@ -471,34 +471,34 @@ export default function AccountSettingsPage() {
 
           <div className="space-y-3">
             <div>
-              <label className="block mb-1 font-bold text-slate-600 text-xs">Full Name</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Full Name</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-xl w-full font-bold text-slate-700 text-sm"
+                className="bg-white dark:bg-slate-700 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
               />
             </div>
             
             <div>
-              <label className="block mb-1 font-bold text-slate-600 text-xs">Email</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Email</label>
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-xl w-full font-bold text-slate-700 text-sm"
+                className="bg-white dark:bg-slate-700 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
               />
             </div>
 
             <div>
-              <label className="block mb-2 font-bold text-slate-600 text-xs">Avatar Color</label>
+              <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-xs">Avatar Color</label>
               <div className="flex flex-wrap gap-2">
                 {COLORS.map((c) => (
                   <button
                     key={c}
                     type="button"
                     onClick={() => setColor(c)}
-                    className={`w-8 h-8 rounded-full transition-transform ${color === c ? "ring-2 ring-offset-2 ring-slate-400 scale-110" : "hover:scale-105"}`}
+                    className={`w-8 h-8 rounded-full transition-transform ${color === c ? "ring-2 ring-offset-2 ring-slate-400 dark:ring-slate-500 scale-110" : "hover:scale-105"}`}
                     style={{ backgroundColor: c }}
                   />
                 ))}
@@ -521,34 +521,34 @@ export default function AccountSettingsPage() {
           
           <form onSubmit={handlePasswordChange} className="space-y-3">
             <div>
-              <label className="block mb-1 font-bold text-slate-600 text-xs">Current Password</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Current Password</label>
               <input
                 type="password"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-xl w-full font-bold text-slate-700 text-sm"
+                className="bg-white dark:bg-slate-700 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 placeholder="Enter current password"
               />
             </div>
             
             <div>
-              <label className="block mb-1 font-bold text-slate-600 text-xs">New Password</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">New Password</label>
               <input
                 type="password"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-xl w-full font-bold text-slate-700 text-sm"
+                className="bg-white dark:bg-slate-700 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 placeholder="Enter new password"
               />
             </div>
             
             <div>
-              <label className="block mb-1 font-bold text-slate-600 text-xs">Confirm New Password</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Confirm New Password</label>
               <input
                 type="password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="px-4 py-2.5 border border-slate-200 rounded-xl w-full font-bold text-slate-700 text-sm"
+                className="bg-white dark:bg-slate-700 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 placeholder="Confirm new password"
               />
             </div>
@@ -556,7 +556,7 @@ export default function AccountSettingsPage() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-slate-800 hover:bg-slate-900 disabled:bg-slate-300 mt-2 py-2.5 border-none rounded-xl w-full font-extrabold text-white text-sm transition-colors cursor-pointer"
+              className="bg-slate-800 hover:bg-slate-900 disabled:bg-slate-300 dark:bg-slate-600 dark:hover:bg-slate-500 mt-2 py-2.5 border-none rounded-xl w-full font-extrabold text-white dark:text-slate-100 text-sm transition-colors cursor-pointer"
             >
               {loading ? "Changing..." : "Change Password"}
             </button>
@@ -568,18 +568,18 @@ export default function AccountSettingsPage() {
           <SectionLabel>Account Information</SectionLabel>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="font-medium text-slate-500">Role</span>
-              <span className="font-bold text-slate-700 capitalize">{currentUser?.role}</span>
+              <span className="font-medium text-slate-500 dark:text-slate-400">Role</span>
+              <span className="font-bold text-slate-700 dark:text-slate-200 capitalize">{currentUser?.role}</span>
             </div>
             {currentUser?.class && (
               <div className="flex justify-between">
-                <span className="font-medium text-slate-500">Class</span>
-                <span className="font-bold text-slate-700">{currentUser.class}</span>
+                <span className="font-medium text-slate-500 dark:text-slate-400">Class</span>
+                <span className="font-bold text-slate-700 dark:text-slate-200">{currentUser.class}</span>
               </div>
             )}
             <div className="flex justify-between">
-              <span className="font-medium text-slate-500">Coins</span>
-              <span className="font-bold text-brand-600">{currentUser?.coins?.toLocaleString()}</span>
+              <span className="font-medium text-slate-500 dark:text-slate-400">Coins</span>
+              <span className="font-bold text-brand-600 dark:text-brand-400">{currentUser?.coins?.toLocaleString()}</span>
             </div>
           </div>
         </Card>

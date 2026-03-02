@@ -55,12 +55,12 @@ export default function TeacherStudentsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
-          <p className="font-semibold text-slate-500 text-xs">Teacher Dashboard</p>
-          <h2 className="font-poppins font-black text-slate-800 text-2xl md:text-3xl">My Students</h2>
+          <p className="font-semibold text-slate-500 dark:text-slate-400 text-xs">Teacher Dashboard</p>
+          <h2 className="font-poppins font-black text-slate-800 dark:text-white text-2xl md:text-3xl">My Students</h2>
         </div>
         <button
           onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 shadow-brand-200 shadow-lg hover:shadow-xl px-5 py-2.5 border-none rounded-full font-extrabold text-white text-sm transition-all cursor-pointer"
+          className="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 px-5 py-2.5 border-none rounded-full font-extrabold text-white text-sm transition-colors cursor-pointer"
         >
           <FaPlus /> Add Student
         </button>
@@ -68,15 +68,15 @@ export default function TeacherStudentsPage() {
 
       {/* Stats */}
       <div className="gap-3 grid grid-cols-2 md:grid-cols-3">
-        <div className="bg-gradient-to-br from-brand-500 to-brand-700 shadow-brand-200 shadow-lg p-5 rounded-2xl text-white text-center">
+        <div className="bg-gradient-to-br from-brand-500 to-brand-700 p-5 rounded-2xl text-white text-center">
           <p className="opacity-80 mb-1 font-bold text-xs uppercase tracking-wider">Students</p>
           <p className="font-poppins font-black text-4xl">{filtered.length}</p>
         </div>
-        <div className="bg-gradient-to-br from-blue-500 to-blue-700 shadow-blue-200 shadow-lg p-5 rounded-2xl text-white text-center">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-5 rounded-2xl text-white text-center">
           <p className="opacity-80 mb-1 font-bold text-xs uppercase tracking-wider">Avg. Coins</p>
           <p className="font-poppins font-black text-4xl">{avgCoins}</p>
         </div>
-        <div className="hidden md:block bg-gradient-to-br from-amber-500 to-amber-600 shadow-amber-200 shadow-lg p-5 rounded-2xl text-white text-center">
+        <div className="hidden md:block bg-gradient-to-br from-amber-500 to-amber-600 p-5 rounded-2xl text-white text-center">
           <p className="opacity-80 mb-1 font-bold text-xs uppercase tracking-wider">Top Score</p>
           <p className="font-poppins font-black text-4xl">{topCoins}</p>
         </div>
@@ -87,7 +87,7 @@ export default function TeacherStudentsPage() {
         {classes.map(c => (
           <button key={c} onClick={() => setClassFilter(c)}
             className={"px-4 py-2 rounded-full text-xs font-extrabold whitespace-nowrap border-none cursor-pointer transition-all " +
-              (classFilter === c ? "bg-slate-800 text-white" : "bg-white text-slate-500 shadow-sm")}>
+              (classFilter === c ? "bg-slate-800 dark:bg-slate-600 text-white" : "bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300")}>
             {c === "All" ? "All Classes" : "Class " + c}
           </button>
         ))}
@@ -97,27 +97,27 @@ export default function TeacherStudentsPage() {
       <div>
         <SectionLabel>Leaderboard — tap to manage</SectionLabel>
         {filtered.length === 0 ? (
-          <div className="py-12 text-slate-400 text-center">
+          <div className="py-12 text-slate-400 dark:text-slate-500 text-center">
             <div className="mb-3 text-5xl">
-              <FaUsers className="inline-block text-slate-300" />
+              <FaUsers className="inline-block text-slate-300 dark:text-slate-600" />
             </div>
-            <p className="font-bold text-sm">No students yet</p>
+            <p className="font-bold dark:text-slate-400 text-sm">No students yet</p>
             <p className="mt-1 text-xs">Tap "Add Student" to get started</p>
           </div>
         ) : (
           <div className="gap-3 grid grid-cols-1 md:grid-cols-2">
             {filtered.map((s, i) => (
               <div key={s._id} onClick={() => navigate("/teacher/students/" + s._id)}
-                className="flex items-center gap-3 bg-white shadow-sm hover:shadow-lg p-4 border border-transparent hover:border-slate-100 rounded-2xl transition-all cursor-pointer">
+                className="flex items-center gap-3 bg-white dark:bg-slate-800 p-4 border border-transparent hover:border-slate-100 dark:hover:border-slate-700 rounded-2xl transition-all cursor-pointer">
                 <span className="w-7 font-black text-base text-center">{medals[i] || "#" + (i+1)}</span>
                 <Avatar user={s} size={44} />
                 <div className="flex-1 min-w-0">
-                  <p className="font-extrabold text-slate-800 text-sm truncate">{s.name}</p>
-                  <p className="text-slate-400 text-xs">Class {s.class}</p>
+                  <p className="font-extrabold text-slate-800 dark:text-white text-sm truncate">{s.name}</p>
+                  <p className="text-slate-400 dark:text-slate-500 text-xs">Class {s.class}</p>
                 </div>
-                <div className="flex items-center gap-1.5 bg-brand-50 px-3 py-1 rounded-full">
+                <div className="flex items-center gap-1.5 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 rounded-full">
                   <FaCoins className="text-amber-500 text-sm" />
-                  <span className="font-black text-brand-700 text-sm">{getStudentCoins(s._id).toLocaleString()}</span>
+                  <span className="font-black text-brand-700 dark:text-brand-400 text-sm">{getStudentCoins(s._id).toLocaleString()}</span>
                 </div>
               </div>
             ))}
@@ -128,27 +128,27 @@ export default function TeacherStudentsPage() {
       {/* Add Student Modal */}
       {showModal && (
         <Modal onClose={() => { setShowModal(false); setForm({...BLANK}); }}>
-          <h3 className="flex items-center gap-2 mb-5 font-poppins font-black text-slate-800 text-xl">
+          <h3 className="flex items-center gap-2 mb-5 font-poppins font-black text-slate-800 dark:text-white text-xl">
             <FaUserPlus /> Add New Student
           </h3>
           <div className="space-y-3 mb-4">
             <input type="text" placeholder="Login (username) *" value={form.login}
               onChange={e => setForm(f => ({...f, login: e.target.value}))}
-              className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
+              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <input type="text" placeholder="Full name *" value={form.name}
               onChange={e => setForm(f => ({...f, name: e.target.value}))}
-              className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
+              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <input type="email" placeholder="Email address (optional)" value={form.email}
               onChange={e => setForm(f => ({...f, email: e.target.value}))}
-              className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
+              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <input type="text" placeholder="Password * (e.g. student123)" value={form.password}
               onChange={e => setForm(f => ({...f, password: e.target.value}))}
-              className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
+              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <input type="text" placeholder="Class (e.g. 8-B)" value={form.class}
               onChange={e => setForm(f => ({...f, class: e.target.value}))}
-              className="bg-slate-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-sm transition-all" />
+              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <div>
-              <p className="mb-2 font-bold text-slate-500 text-xs">Avatar Color</p>
+              <p className="mb-2 font-bold text-slate-500 dark:text-slate-400 text-xs">Avatar Color</p>
               <div className="flex flex-wrap gap-2">
                 {COLORS.map(c => (
                   <button key={c} onClick={() => setForm(f => ({...f, color: c}))}
@@ -160,11 +160,11 @@ export default function TeacherStudentsPage() {
           </div>
           <div className="flex gap-3">
             <button onClick={() => { setShowModal(false); setForm({...BLANK}); }}
-              className="flex-1 bg-white py-3 border-2 border-slate-200 rounded-2xl font-extrabold text-slate-600 text-sm cursor-pointer">
+              className="flex-1 bg-white dark:bg-slate-700 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-2xl font-extrabold text-slate-600 dark:text-slate-300 text-sm cursor-pointer">
               Cancel
             </button>
             <button onClick={handleCreate} disabled={loading}
-              className="flex flex-[2] justify-center items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
+              className="flex flex-[2] justify-center items-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
               {loading ? "Creating..." : <>Create Student <FaCheck /></>}
             </button>
           </div>
@@ -178,20 +178,20 @@ export default function TeacherStudentsPage() {
             <div className="mb-3 text-5xl">
               <FaTrophy className="inline-block text-amber-500" />
             </div>
-            <h3 className="mb-1 font-poppins font-black text-xl">Student Created!</h3>
-            <p className="mb-5 text-slate-500 text-sm">Share these with <b>{createdInfo.name}</b></p>
-            <div className="space-y-3 bg-slate-50 mb-4 p-4 rounded-2xl text-left">
-              <div className="flex justify-between"><span className="font-bold text-slate-400 text-xs">LOGIN</span><span className="font-extrabold text-sm">{createdInfo.login}</span></div>
-              <div className="bg-slate-200 h-px" />
-              <div className="flex justify-between"><span className="font-bold text-slate-400 text-xs">PASSWORD</span><span className="font-extrabold text-sm">{createdInfo.password}</span></div>
+            <h3 className="mb-1 font-poppins font-black dark:text-white text-xl">Student Created!</h3>
+            <p className="mb-5 text-slate-500 dark:text-slate-400 text-sm">Share these with <b className="dark:text-white">{createdInfo.name}</b></p>
+            <div className="space-y-3 bg-slate-50 dark:bg-slate-700 mb-4 p-4 rounded-2xl text-left">
+              <div className="flex justify-between"><span className="font-bold text-slate-400 dark:text-slate-500 text-xs">LOGIN</span><span className="font-extrabold dark:text-white text-sm">{createdInfo.login}</span></div>
+              <div className="bg-slate-200 dark:bg-slate-600 h-px" />
+              <div className="flex justify-between"><span className="font-bold text-slate-400 dark:text-slate-500 text-xs">PASSWORD</span><span className="font-extrabold dark:text-white text-sm">{createdInfo.password}</span></div>
             </div>
-            <div className="bg-amber-50 mb-4 p-3 rounded-xl">
-              <p className="flex justify-center items-center gap-2 font-bold text-amber-700 text-xs">
+            <div className="bg-amber-50 dark:bg-amber-900/30 mb-4 p-3 rounded-xl">
+              <p className="flex justify-center items-center gap-2 font-bold text-amber-700 dark:text-amber-400 text-xs">
                 <FaExclamationTriangle /> Save these! Password won't be shown again.
               </p>
             </div>
             <button onClick={() => setCreatedInfo(null)}
-              className="flex justify-center items-center gap-2 bg-gradient-to-r from-brand-500 to-brand-600 py-3 border-none rounded-2xl w-full font-extrabold text-white text-sm cursor-pointer">
+              className="flex justify-center items-center gap-2 bg-brand-500 hover:bg-brand-600 py-3 border-none rounded-2xl w-full font-extrabold text-white text-sm cursor-pointer">
               Got it <FaCheck />
             </button>
           </div>

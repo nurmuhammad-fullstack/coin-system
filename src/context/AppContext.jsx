@@ -17,6 +17,24 @@ export function AppProvider({ children }) {
   const [unreadCount, setUnreadCount]   = useState(0);
   const [toast, setToast]               = useState(null);
   const [loading, setLoading]           = useState(true);
+  
+  // Dark mode state with localStorage persistence
+  const [darkMode, setDarkMode] = useState(() => {
+    const saved = localStorage.getItem("coined_dark_mode");
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  // Apply dark mode class to document and save to localStorage
+  useEffect(() => {
+    if (darkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+    localStorage.setItem("coined_dark_mode", JSON.stringify(darkMode));
+  }, [darkMode]);
+
+  const toggleDarkMode = () => setDarkMode(prev => !prev);
 
   useEffect(() => {
     const token = localStorage.getItem("coined_token");
@@ -247,12 +265,12 @@ return res;
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center bg-slate-50 min-h-screen">
+      <div className="flex justify-center items-center bg-slate-50 dark:bg-slate-900 min-h-screen">
         <div className="text-center">
           <div className="mb-3 text-5xl animate-bounce">
             <FaCoins />
           </div>
-          <p className="font-bold text-slate-500">Loading CoinEd...</p>
+          <p className="font-bold text-slate-500 dark:text-slate-400">Loading CoinEd...</p>
         </div>
       </div>
     );
@@ -276,6 +294,7 @@ return (
       notifications, unreadCount,
       loadNotifications, markNotificationAsRead, markAllNotificationsAsRead, clearAllNotifications,
       toast, showToast,
+      darkMode, toggleDarkMode,
     }}>
       {children}
     </AppContext.Provider>

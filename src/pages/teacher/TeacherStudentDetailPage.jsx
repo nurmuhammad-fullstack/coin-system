@@ -37,9 +37,9 @@ export default function TeacherStudentDetailPage() {
 
   if (!id || id === "undefined") {
     return (
-      <div className="flex flex-col justify-center items-center h-64 text-slate-400">
+      <div className="flex flex-col justify-center items-center h-64 text-slate-400 dark:text-slate-500">
         <div className="mb-3 text-5xl">⚠️</div>
-        <p className="font-bold">Invalid student link</p>
+        <p className="font-bold dark:text-white">Invalid student link</p>
         <button onClick={() => navigate("/teacher/students")}
           className="bg-blue-500 mt-4 px-5 py-2 border-none rounded-full font-bold text-white text-sm cursor-pointer">
           ← Back to Students
@@ -50,9 +50,9 @@ export default function TeacherStudentDetailPage() {
 
   if (!student) {
     return (
-      <div className="flex flex-col justify-center items-center h-64 text-slate-400">
+      <div className="flex flex-col justify-center items-center h-64 text-slate-400 dark:text-slate-500">
         <div className="mb-3 text-5xl">👤</div>
-        <p className="font-bold">Student not found</p>
+        <p className="font-bold dark:text-white">Student not found</p>
         <button onClick={() => navigate("/teacher/students")}
           className="bg-blue-500 mt-4 px-5 py-2 border-none rounded-full font-bold text-white text-sm cursor-pointer">
           ← Back to Students
@@ -104,7 +104,7 @@ export default function TeacherStudentDetailPage() {
     <div className="space-y-4 p-5 md:p-0">
       {/* Back button */}
       <button onClick={() => navigate("/teacher/students")}
-        className="flex items-center gap-2 bg-transparent border-none font-bold text-slate-500 hover:text-slate-800 text-sm transition-colors cursor-pointer">
+        className="flex items-center gap-2 bg-transparent border-none font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white text-sm transition-colors cursor-pointer">
         ← All Students
       </button>
 
@@ -115,11 +115,11 @@ export default function TeacherStudentDetailPage() {
         <div className="space-y-4 md:col-span-1">
 
           {/* Student card */}
-          <div className="bg-white shadow-sm p-6 border border-slate-100 rounded-3xl text-center">
+          <div className="bg-white dark:bg-slate-800 p-6 border border-slate-100 dark:border-slate-700 rounded-3xl text-center">
             <div className="flex justify-center mb-3">
               <Avatar user={student} size={72} />
             </div>
-            <h2 className="mb-2 font-poppins font-black text-slate-800 text-xl">{student.name}</h2>
+            <h2 className="mb-2 font-poppins font-black text-slate-800 dark:text-white text-xl">{student.name}</h2>
             <Chip color="blue">Class {student.class}</Chip>
 
             {/* Balance */}
@@ -132,29 +132,29 @@ export default function TeacherStudentDetailPage() {
             </div>
 
             {/* Email */}
-            <p className="mt-3 font-medium text-slate-400 text-xs">{student.email}</p>
+            <p className="mt-3 font-medium text-slate-400 dark:text-slate-500 text-xs">{student.email}</p>
           </div>
 
           {/* Action buttons */}
           <div className="gap-3 grid grid-cols-2">
             <button onClick={() => setModal("add")}
-              className="bg-gradient-to-r from-brand-500 to-brand-600 shadow-brand-200 shadow-lg hover:shadow-xl py-3.5 border-none rounded-2xl font-extrabold text-white text-sm transition-all cursor-pointer">
+              className="bg-brand-500 hover:bg-brand-600 py-3.5 border-none rounded-2xl font-extrabold text-white text-sm transition-colors cursor-pointer">
               ➕ Add
             </button>
             <button onClick={() => setModal("sub")}
-              className="bg-gradient-to-r from-red-500 to-red-600 shadow-lg shadow-red-200 hover:shadow-xl py-3.5 border-none rounded-2xl font-extrabold text-white text-sm transition-all cursor-pointer">
+              className="bg-red-500 hover:bg-red-600 py-3.5 border-none rounded-2xl font-extrabold text-white text-sm transition-colors cursor-pointer">
               ➖ Remove
             </button>
           </div>
 
           {/* Quick actions */}
-          <div className="bg-white shadow-sm p-4 border border-slate-100 rounded-2xl">
+          <div className="bg-white dark:bg-slate-800 p-4 border border-slate-100 dark:border-slate-700 rounded-2xl">
             <SectionLabel>Quick Actions</SectionLabel>
             <div className="flex flex-wrap gap-2">
               {QUICK_ACTIONS.map(qa => (
                 <button key={qa.label} onClick={() => handleQuick(qa)}
                   className={"px-3 py-1.5 rounded-full text-xs font-extrabold border-none cursor-pointer transition-all " +
-                    (qa.type === "add" ? "bg-brand-50 text-brand-700 hover:bg-brand-100" : "bg-red-50 text-red-600 hover:bg-red-100")}>
+                    (qa.type === "add" ? "bg-brand-50 dark:bg-brand-900/30 text-brand-700 dark:text-brand-400 hover:bg-brand-100 dark:hover:bg-brand-800" : "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-800")}>
                   {qa.label}
                 </button>
               ))}
@@ -163,38 +163,38 @@ export default function TeacherStudentDetailPage() {
 
           {/* Delete student */}
           <button onClick={() => setModal("delete")}
-            className="bg-red-50 hover:bg-red-100 py-3 border-2 border-red-100 rounded-2xl w-full font-extrabold text-red-500 text-sm transition-colors cursor-pointer">
+            className="bg-red-50 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-800 py-3 border-2 border-red-100 dark:border-red-800 rounded-2xl w-full font-extrabold text-red-500 dark:text-red-400 text-sm transition-colors cursor-pointer">
             🗑️ Delete Student
           </button>
         </div>
 
         {/* Right column — transactions */}
         <div className="md:col-span-2">
-          <div className="bg-white shadow-sm p-5 border border-slate-100 rounded-3xl">
+          <div className="bg-white dark:bg-slate-800 p-5 border border-slate-100 dark:border-slate-700 rounded-3xl">
             <div className="flex justify-between items-center mb-4">
               <SectionLabel>Transaction History</SectionLabel>
-              <span className="font-bold text-slate-400 text-xs">{txs.length} transactions</span>
+              <span className="font-bold text-slate-400 dark:text-slate-500 text-xs">{txs.length} transactions</span>
             </div>
             {txs.length === 0 ? (
-              <div className="py-10 text-slate-400 text-center">
+              <div className="py-10 text-slate-400 dark:text-slate-500 text-center">
                 <div className="mb-2 text-4xl">📭</div>
-                <p className="font-bold text-sm">No transactions yet</p>
+                <p className="font-bold dark:text-slate-400 text-sm">No transactions yet</p>
               </div>
             ) : (
               <div className="space-y-0 max-h-[500px] overflow-y-auto">
                 {txs.map(tx => {
                   const earn = tx.type === "earn";
                   return (
-                    <div key={tx._id || tx.id} className="flex items-center gap-3 py-3 border-slate-50 last:border-0 border-b">
+                    <div key={tx._id || tx.id} className="flex items-center gap-3 py-3 border-slate-50 dark:border-slate-700 last:border-0 border-b">
                       <div className={"w-10 h-10 rounded-full flex items-center justify-center text-sm flex-shrink-0 " +
-                        (earn ? "bg-brand-50 text-brand-600" : "bg-red-50 text-red-500")}>
+                        (earn ? "bg-brand-50 dark:bg-brand-900/50 text-brand-600 dark:text-brand-400" : "bg-red-50 dark:bg-red-900/50 text-red-500")}>
                         {earn ? "↑" : "↓"}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="font-bold text-slate-800 text-sm truncate">{tx.label}</p>
-                        <p className="text-slate-400 text-xs">{tx.date || new Date(tx.createdAt).toLocaleDateString()}</p>
+                        <p className="font-bold text-slate-800 dark:text-white text-sm truncate">{tx.label}</p>
+                        <p className="text-slate-400 dark:text-slate-500 text-xs">{tx.date || new Date(tx.createdAt).toLocaleDateString()}</p>
                       </div>
-                      <span className={"text-sm font-black " + (earn ? "text-brand-600" : "text-red-500")}>
+                      <span className={"text-sm font-black " + (earn ? "text-brand-600 dark:text-brand-400" : "text-red-500")}>
                         {earn ? "+" : ""}{tx.amount}
                       </span>
                     </div>
@@ -209,33 +209,31 @@ export default function TeacherStudentDetailPage() {
       {/* Add / Remove Coins Modal */}
       {(modal === "add" || modal === "sub") && (
         <Modal onClose={() => { setModal(null); setAmount(""); setReason(""); }}>
-          <h3 className="mb-5 font-poppins font-black text-slate-800 text-xl">
+          <h3 className="mb-5 font-poppins font-black text-slate-800 dark:text-white text-xl">
             {modal === "add" ? "➕ Add Coins" : "➖ Remove Coins"}
           </h3>
           <div className="space-y-3 mb-5">
-            <div className="flex items-center gap-3 bg-slate-50 focus-within:bg-white px-4 py-3 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
               <span>🪙</span>
               <input type="number" placeholder="Amount" value={amount} min="1"
                 onChange={e => setAmount(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none font-bold text-slate-800 text-sm placeholder-slate-400" />
+                className="flex-1 bg-transparent border-none outline-none font-bold text-slate-800 dark:text-slate-200 text-sm placeholder-slate-400" />
             </div>
-            <div className="flex items-center gap-3 bg-slate-50 focus-within:bg-white px-4 py-3 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
+            <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus-within:border-brand-400 rounded-xl transition-all">
               <span>📝</span>
               <input type="text" placeholder="Reason (optional)" value={reason}
                 onChange={e => setReason(e.target.value)}
-                className="flex-1 bg-transparent border-none outline-none font-bold text-slate-800 text-sm placeholder-slate-400" />
+                className="flex-1 bg-transparent border-none outline-none font-bold text-slate-800 dark:text-slate-200 text-sm placeholder-slate-400" />
             </div>
           </div>
           <div className="flex gap-3">
             <button onClick={() => { setModal(null); setAmount(""); setReason(""); }}
-              className="flex-1 bg-white py-3 border-2 border-slate-200 rounded-2xl font-extrabold text-slate-600 text-sm cursor-pointer">
+              className="flex-1 bg-white dark:bg-slate-700 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-2xl font-extrabold text-slate-600 dark:text-slate-300 text-sm cursor-pointer">
               Cancel
             </button>
             <button onClick={handleManual}
-              className={"flex-[2] py-3 rounded-2xl font-extrabold text-sm text-white border-none cursor-pointer shadow-lg " +
-                (modal === "add"
-                  ? "bg-gradient-to-r from-brand-500 to-brand-600 shadow-brand-200"
-                  : "bg-gradient-to-r from-red-500 to-red-600 shadow-red-200")}>
+              className={"flex-[2] py-3 rounded-2xl font-extrabold text-sm text-white border-none cursor-pointer " +
+                (modal === "add" ? "bg-brand-500 hover:bg-brand-600" : "bg-red-500 hover:bg-red-600")}>
               Confirm
             </button>
           </div>
@@ -247,18 +245,18 @@ export default function TeacherStudentDetailPage() {
         <Modal onClose={() => setModal(null)}>
           <div className="text-center">
             <div className="mb-3 text-5xl">🗑️</div>
-            <h3 className="mb-2 font-poppins font-black text-slate-800 text-xl">Delete Student?</h3>
-            <p className="mb-2 text-slate-500 text-sm">
-              Are you sure you want to delete <b>{student.name}</b>?
+            <h3 className="mb-2 font-poppins font-black text-slate-800 dark:text-white text-xl">Delete Student?</h3>
+            <p className="mb-2 text-slate-500 dark:text-slate-400 text-sm">
+              Are you sure you want to delete <b className="dark:text-white">{student.name}</b>?
             </p>
             <p className="mb-6 font-bold text-red-400 text-xs">⚠️ This action cannot be undone!</p>
             <div className="flex gap-3">
               <button onClick={() => setModal(null)}
-                className="flex-1 bg-white py-3 border-2 border-slate-200 rounded-2xl font-extrabold text-slate-600 text-sm cursor-pointer">
+                className="flex-1 bg-white dark:bg-slate-700 py-3 border-2 border-slate-200 dark:border-slate-600 rounded-2xl font-extrabold text-slate-600 dark:text-slate-300 text-sm cursor-pointer">
                 Cancel
               </button>
               <button onClick={handleDelete} disabled={delLoading}
-                className="flex-[2] bg-gradient-to-r from-red-500 to-red-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
+                className="flex-[2] bg-red-500 hover:bg-red-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm cursor-pointer">
                 {delLoading ? "Deleting..." : "Yes, Delete 🗑️"}
               </button>
             </div>
@@ -268,3 +266,4 @@ export default function TeacherStudentDetailPage() {
     </div>
   );
 }
+

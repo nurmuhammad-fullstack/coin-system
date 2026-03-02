@@ -34,8 +34,8 @@ const handleSettingsClick = (label) => {
         <div className="flex justify-center mb-3">
           <Avatar user={currentUser} size={80} />
         </div>
-        <h2 className="mb-1 font-poppins font-black text-slate-800 text-2xl">{currentUser.name}</h2>
-        <span className="inline-flex items-center gap-1 bg-amber-50 px-3 py-1 rounded-full font-bold text-amber-700 text-xs">
+        <h2 className="mb-1 font-poppins font-black text-slate-800 dark:text-white text-2xl">{currentUser.name}</h2>
+        <span className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-3 py-1 rounded-full font-bold text-amber-700 dark:text-amber-400 text-xs">
           ⭐ Class Teacher
         </span>
       </Card>
@@ -49,8 +49,8 @@ const handleSettingsClick = (label) => {
         ].map(s => (
           <Card key={s.label} className="p-3 text-center">
             <span className="text-xl">{s.icon}</span>
-            <p className="mt-1 font-poppins font-black text-slate-800 text-xl">{s.value}</p>
-            <p className="font-bold text-[10px] text-slate-400">{s.label}</p>
+            <p className="mt-1 font-poppins font-black text-slate-800 dark:text-white text-xl">{s.value}</p>
+            <p className="font-bold text-[10px] text-slate-400 dark:text-slate-500">{s.label}</p>
           </Card>
         ))}
       </div>
@@ -62,19 +62,19 @@ const handleSettingsClick = (label) => {
           <div 
             key={s.label}
             onClick={() => handleSettingsClick(s.label)}
-            className={`flex items-center justify-between py-3 cursor-pointer hover:bg-slate-50 rounded-xl px-1 transition-colors
-              ${i < SETTINGS.length - 1 ? "border-b border-slate-50" : ""}`}
+            className={`flex items-center justify-between py-3 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl px-1 transition-colors
+              ${i < SETTINGS.length - 1 ? "border-b border-slate-100 dark:border-slate-700" : ""}`}
           >
             <div className="flex items-center gap-3">
               <span className="text-lg">{s.icon}</span>
-              <span className="font-bold text-slate-700 text-sm">{s.label}</span>
+              <span className="font-bold text-slate-700 dark:text-slate-200 text-sm">{s.label}</span>
             </div>
-            <span className="text-slate-300 text-sm">›</span>
+            <span className="text-slate-300 dark:text-slate-600 text-sm">›</span>
           </div>
         ))}
         <button
           onClick={handleLogout}
-          className="bg-red-50 hover:bg-red-100 mt-3 py-2.5 border-none rounded-xl w-full font-extrabold text-red-500 text-sm transition-colors cursor-pointer"
+          className="bg-red-50 hover:bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-900/60 mt-3 py-2.5 border-none rounded-xl w-full font-extrabold text-red-500 dark:text-red-400 text-sm transition-colors cursor-pointer"
         >
           🚪 Log Out
         </button>

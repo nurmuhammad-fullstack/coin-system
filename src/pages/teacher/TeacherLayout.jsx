@@ -22,15 +22,15 @@ export default function TeacherLayout() {
       <Toast />
 
       {/* MOBILE - Full screen */}
-      <div className="md:hidden flex flex-col bg-slate-50 min-h-screen">
+      <div className="md:hidden flex flex-col bg-slate-50 dark:bg-slate-900 min-h-screen">
         <div className="flex-1 overflow-x-hidden overflow-y-auto" style={{ scrollbarWidth: "none" }}>
           <Outlet />
         </div>
-        <nav className="bottom-0 z-50 sticky flex bg-white pb-safe border-slate-100 border-t">
+        <nav className="bottom-0 z-50 sticky flex bg-white dark:bg-slate-800 pb-safe border-slate-100 dark:border-slate-700 border-t">
           {TABS.map(t => (
             <button key={t.id} onClick={() => navigate(t.path)}
               className={`flex-1 flex flex-col items-center gap-0.5 py-2.5 text-[10px] font-extrabold border-none bg-transparent cursor-pointer transition-colors
-                ${active === t.id ? "text-indigo-500" : "text-slate-400"}`}>
+                ${active === t.id ? "text-indigo-500" : "text-slate-400 dark:text-slate-500"}`}>
               <t.icon className="text-xl leading-tight" />
               {t.label}
               {active === t.id && <div className="bg-indigo-500 rounded-full w-1 h-1" />}
@@ -40,19 +40,19 @@ export default function TeacherLayout() {
       </div>
 
       {/* DESKTOP */}
-      <div className="hidden md:flex bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">
+      <div className="hidden md:flex bg-gradient-to-br from-slate-50 dark:from-slate-900 dark:via-slate-900 to-indigo-50 dark:to-slate-900 min-h-screen">
 
         {/* Sidebar */}
-        <aside className="top-0 sticky flex flex-col flex-shrink-0 bg-white shadow-sm border-slate-100 border-r w-56 lg:w-64 h-screen">
+        <aside className="top-0 sticky flex flex-col flex-shrink-0 bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 border-r w-56 lg:w-64 h-screen">
           {/* Logo */}
-          <div className="flex-shrink-0 px-6 py-6 border-slate-100 border-b">
+          <div className="flex-shrink-0 px-6 py-6 border-slate-100 dark:border-slate-700 border-b">
             <div className="flex items-center gap-3">
-              <div className="flex justify-center items-center bg-gradient-to-br from-indigo-500 to-purple-600 shadow-indigo-200 shadow-lg rounded-xl w-10 h-10">
+              <div className="flex justify-center items-center bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl w-10 h-10">
                 <FaCoins className="text-white text-xl" />
               </div>
               <div>
-                <p className="font-black text-slate-900 text-sm leading-tight">CoinEd</p>
-                <p className="font-medium text-[10px] text-slate-400">Teacher Portal</p>
+                <p className="font-black text-slate-900 dark:text-white text-sm leading-tight">CoinEd</p>
+                <p className="font-medium text-[10px] text-slate-400 dark:text-slate-400">Teacher Portal</p>
               </div>
             </div>
           </div>
@@ -63,8 +63,8 @@ export default function TeacherLayout() {
               <button key={t.id} onClick={() => navigate(t.path)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-extrabold text-left border-none cursor-pointer transition-all
                   ${active === t.id
-                    ? "bg-indigo-500 text-white shadow-lg shadow-indigo-200"
-                    : "bg-transparent text-slate-500 hover:bg-indigo-50 hover:text-indigo-700"
+                    ? "bg-indigo-500 text-white"
+                    : "bg-transparent text-slate-500 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 hover:text-indigo-600 dark:hover:text-white"
                   }`}>
                 <t.icon className="text-lg" />
                 {t.label}
@@ -73,18 +73,18 @@ export default function TeacherLayout() {
           </nav>
 
           {/* User info + logout */}
-          <div className="flex-shrink-0 px-3 pt-4 pb-4 border-slate-100 border-t">
-            <div className="bg-indigo-50 mb-3 p-3 rounded-2xl">
+          <div className="flex-shrink-0 px-3 pt-4 pb-4 border-slate-100 dark:border-slate-700 border-t">
+            <div className="bg-indigo-50 dark:bg-slate-700 mb-3 p-3 rounded-2xl">
               <div className="flex items-center gap-3">
                 <Avatar user={currentUser} size={36} />
                 <div className="flex-1 min-w-0">
-                  <p className="font-bold text-slate-700 text-xs truncate">{currentUser?.name || "Teacher"}</p>
-                  <p className="text-[10px] text-slate-400 truncate">{currentUser?.email}</p>
+                  <p className="font-bold text-slate-700 dark:text-white text-xs truncate">{currentUser?.name || "Teacher"}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-400 truncate">{currentUser?.email}</p>
                 </div>
               </div>
             </div>
             <button onClick={logout}
-              className="flex justify-center items-center gap-2 bg-red-50 hover:bg-red-100 py-2.5 border-none rounded-xl w-full font-bold text-red-400 hover:text-red-600 text-xs transition-colors cursor-pointer">
+              className="flex justify-center items-center gap-2 bg-red-50 hover:bg-red-100 dark:bg-red-900/40 dark:hover:bg-red-900/60 py-2.5 border-none rounded-xl w-full font-bold text-red-500 hover:text-red-600 dark:hover:text-red-300 dark:text-red-400 text-xs transition-colors cursor-pointer">
               <FaSignOutAlt /> Sign out
             </button>
           </div>

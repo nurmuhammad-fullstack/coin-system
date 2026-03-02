@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AppProvider } from "./context/AppContext";
 import { RequireStudent, RequireTeacher } from "./components/ProtectedRoute";
 import { Toast } from "./components/ui";
+import DarkModeToggle from "./components/DarkModeToggle";
 
 // Pages
 import LoginPage                  from "./pages/LoginPage";
@@ -25,9 +26,10 @@ import TeacherQuizzesPage         from "./pages/teacher/TeacherQuizzesPage";
 import TeacherQuizResultsPage     from "./pages/teacher/TeacherQuizResultsPage";
 
 export default function App() {
-  return (
+return (
     <AppProvider>
       <Toast />
+      <DarkModeToggle />
       <BrowserRouter>
         <Routes>
           {/* Auth */}
