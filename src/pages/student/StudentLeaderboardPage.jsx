@@ -30,13 +30,13 @@ export default function StudentLeaderboardPage() {
       </div>
 
       {userRank > 0 && (
-        <div className="flex justify-between items-center bg-amber-400 px-5 py-4 rounded-2xl">
+        <div className="flex justify-between items-center bg-brand-500 px-5 py-4 rounded-2xl">
           <div>
-            <p className="mb-0.5 font-bold text-amber-100 text-xs">Sizning o'rningiz</p>
+            <p className="mb-0.5 font-bold text-brand-100 text-xs">Sizning o'rningiz</p>
             <p className="font-black text-white text-3xl">#{userRank}</p>
           </div>
           <div className="text-right">
-            <p className="mb-0.5 font-bold text-amber-100 text-xs">Coinlar</p>
+            <p className="mb-0.5 font-bold text-brand-100 text-xs">Coinlar</p>
             <p className="font-black text-white text-2xl">🪙 {currentUser?.coins || 0}</p>
           </div>
         </div>
@@ -47,7 +47,7 @@ export default function StudentLeaderboardPage() {
           {["All", ...classes].map(c => (
             <button key={c} onClick={() => setFilter(c)}
               className={"px-4 py-2 rounded-full text-xs font-extrabold whitespace-nowrap border-none cursor-pointer transition-all " +
-                (filter === c ? "bg-amber-400 text-white" : "bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300")}>
+                (filter === c ? "bg-brand-500 text-white" : "bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300")}>
               {c === "All" ? "Barchasi" : "Sinf " + c}
             </button>
           ))}

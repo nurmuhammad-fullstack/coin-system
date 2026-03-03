@@ -52,7 +52,7 @@ export default function StudentLayout() {
           {/* Logo */}
           <div className="px-6 py-8 border-slate-100 dark:border-slate-700 border-b">
             <div className="flex items-center gap-3">
-              <div className="flex justify-center items-center bg-gradient-to-br from-brand-500 to-brand-700 shadow-brand-200 shadow-lg dark:shadow-brand-900 rounded-2xl w-10 h-10">
+              <div className="flex justify-center items-center bg-gradient-to-br from-brand-500 to-brand-700 rounded-2xl w-10 h-10">
                 <FaCoins className="text-white text-xl" />
               </div>
               <div>
@@ -70,7 +70,7 @@ export default function StudentLayout() {
                 onClick={() => navigate(t.path)}
                 className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-extrabold transition-all border-none cursor-pointer text-left
                   ${active === t.id
-                    ? "bg-brand-500 text-white shadow-lg shadow-brand-200 dark:shadow-brand-900"
+                    ? "bg-brand-500 text-white"
                     : "text-slate-500 dark:text-slate-400 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-800 dark:hover:text-white"
                   }`}
               >

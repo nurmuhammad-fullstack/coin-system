@@ -21,11 +21,11 @@ export default function StudentHomePage() {
   const fn    = currentUser?.name?.split(" ")[0] || "Student";
 
   const QUICK = [
-    { label: "My Wallet",    icon: FaWallet, bg: "bg-blue-50 dark:bg-blue-900/30",   color: "text-blue-600 dark:text-blue-400",   path: "/student/wallet"  },
+    { label: "My Wallet",    icon: FaWallet, bg: "bg-brand-50 dark:bg-brand-900/30",   color: "text-brand-600 dark:text-brand-400",   path: "/student/wallet"  },
     { label: "Rewards Shop", icon: FaGift, bg: "bg-brand-50 dark:bg-brand-900/30",  color: "text-brand-600 dark:text-brand-400",  path: "/student/rewards" },
-    { label: "Leaderboard",  icon: FaTrophy, bg: "bg-amber-50 dark:bg-amber-900/30",  color: "text-amber-600 dark:text-amber-400",  path: "/student/leaderboard" },
-    { label: "Tests",        icon: FaEdit, bg: "bg-green-50 dark:bg-green-900/30",  color: "text-green-600 dark:text-green-400",  path: "/student/tests"   },
-    { label: "Profile",      icon: FaUser, bg: "bg-purple-50 dark:bg-purple-900/30", color: "text-purple-600 dark:text-purple-400", path: "/student/profile" },
+    { label: "Leaderboard",  icon: FaTrophy, bg: "bg-brand-50 dark:bg-brand-900/30",  color: "text-brand-600 dark:text-brand-400",  path: "/student/leaderboard" },
+    { label: "Tests",        icon: FaEdit, bg: "bg-brand-50 dark:bg-brand-900/30",  color: "text-brand-600 dark:text-brand-400",  path: "/student/tests"   },
+    { label: "Profile",      icon: FaUser, bg: "bg-brand-50 dark:bg-brand-900/30", color: "text-brand-600 dark:text-brand-400", path: "/student/profile" },
   ];
 
   return (

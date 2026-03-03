@@ -67,12 +67,12 @@ export default function StudentWalletPage() {
       </div>
 
       {/* Filter tabs */}
-      <div className="flex bg-white p-1 rounded-2xl">
+      <div className="flex bg-white dark:bg-slate-800 p-1 rounded-2xl">
         {FILTERS.map(f => (
           <button
             key={f}
             onClick={() => setFilter(f)}
-            className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all border-none cursor-pointer ${filter === f ? "bg-brand-500 text-gray-50" : "text-slate-400 bg-transparent hover:text-white"}`}
+            className={`flex-1 py-2 rounded-xl text-xs font-extrabold transition-all border-none cursor-pointer ${filter === f ? "bg-brand-500 text-gray-50" : "text-slate-400 dark:text-slate-500 bg-transparent hover:text-white"}`}
           >
             {f}
           </button>

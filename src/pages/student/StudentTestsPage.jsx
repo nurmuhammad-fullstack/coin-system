@@ -29,9 +29,9 @@ export default function StudentTestsPage() {
       {/* Stats */}
       <div className="gap-3 grid grid-cols-3">
         {[
-          { label: "Available",    value: availableCount, icon: "📋", bg: "bg-blue-50 dark:bg-blue-900/30",   color: "text-blue-600 dark:text-blue-400"  },
-          { label: "Completed",    value: completedCount, icon: "✅", bg: "bg-green-50 dark:bg-green-900/30",  color: "text-green-600 dark:text-green-400" },
-          { label: "Coins Earned", value: coinsEarned,    icon: "🪙", bg: "bg-amber-50 dark:bg-amber-900/30",  color: "text-amber-600 dark:text-amber-400" },
+          { label: "Available",    value: availableCount, icon: "📋", bg: "bg-brand-50 dark:bg-brand-900/30",   color: "text-brand-600 dark:text-brand-400"  },
+          { label: "Completed",    value: completedCount, icon: "✅", bg: "bg-brand-50 dark:bg-brand-900/30",  color: "text-brand-600 dark:text-brand-400" },
+          { label: "Coins Earned", value: coinsEarned,    icon: "🪙", bg: "bg-brand-50 dark:bg-brand-900/30",  color: "text-brand-600 dark:text-brand-400" },
         ].map(s => (
           <Card key={s.label} className={`${s.bg} p-4 border-none`}>
             <p className="mb-1 text-2xl">{s.icon}</p>
@@ -71,11 +71,11 @@ export default function StudentTestsPage() {
 
               return (
                 <div key={id} className={`flex items-center gap-4 p-4 rounded-2xl border transition-all ${
-                  done ? "border-green-100 dark:border-green-900/50 bg-green-50/40 dark:bg-green-900/20" : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600"
+                  done ? "border-brand-100 dark:border-brand-900/50 bg-brand-50/40 dark:bg-brand-900/20" : "bg-white dark:bg-slate-800 border-slate-100 dark:border-slate-700 hover:border-slate-200 dark:hover:border-slate-600"
                 }`}>
                   {/* Icon */}
                   <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 ${
-                    done ? "bg-green-100 dark:bg-green-900/50" : "bg-blue-50 dark:bg-blue-900/30"
+                    done ? "bg-brand-100 dark:bg-brand-900/50" : "bg-brand-50 dark:bg-brand-900/30"
                   }`}>
                     {done ? "✅" : "📝"}
                   </div>
@@ -91,10 +91,10 @@ export default function StudentTestsPage() {
                     {/* Score badge */}
                     {done && (
                       <div className="flex items-center gap-2 mt-1.5">
-                        <div className="inline-flex items-center gap-1 bg-green-100 dark:bg-green-900/50 px-2.5 py-0.5 rounded-full font-black text-green-700 dark:text-green-400 text-xs">
+                        <div className="inline-flex items-center gap-1 bg-brand-100 dark:bg-brand-900/50 px-2.5 py-0.5 rounded-full font-black text-brand-700 dark:text-brand-400 text-xs">
                           🏆 {quiz.attempt.score ?? 0}% ball
                         </div>
-                        <div className="inline-flex items-center gap-1 bg-amber-50 dark:bg-amber-900/30 px-2.5 py-0.5 rounded-full font-black text-amber-600 dark:text-amber-400 text-xs">
+                        <div className="inline-flex items-center gap-1 bg-brand-50 dark:bg-brand-900/30 px-2.5 py-0.5 rounded-full font-black text-brand-600 dark:text-brand-400 text-xs">
                           🪙 +{quiz.attempt.coinsEarned ?? 0}
                         </div>
                       </div>
@@ -104,7 +104,7 @@ export default function StudentTestsPage() {
                   {/* Action */}
                   {done ? (
                     <div className="flex-shrink-0 text-center">
-                      <div className="bg-green-500 px-4 py-2 rounded-xl font-black text-white text-xs">
+                      <div className="bg-brand-500 px-4 py-2 rounded-xl font-black text-white text-xs">
                         Completed ✓
                       </div>
                       <p className="mt-1 font-medium text-[10px] text-slate-400 dark:text-slate-500">1 attempt only</p>
@@ -112,7 +112,7 @@ export default function StudentTestsPage() {
                   ) : (
                     <button
                       onClick={() => navigate(`/student/quiz/${id}`)}
-                      className="flex-shrink-0 bg-green-500 hover:bg-green-600 px-4 py-2.5 border-none rounded-xl font-extrabold text-white text-xs hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      className="flex-shrink-0 bg-brand-500 hover:bg-brand-600 px-4 py-2.5 border-none rounded-xl font-extrabold text-white text-xs hover:scale-105 active:scale-95 transition-all cursor-pointer"
                     >
                       Start Test →
                     </button>

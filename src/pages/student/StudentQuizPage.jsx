@@ -108,7 +108,7 @@ export default function StudentQuizPage() {
   // ── Already done ────────────────────────────────
   if (alreadyDone) return (
     <div className="z-50 fixed inset-0 flex justify-center items-center bg-gradient-to-br from-indigo-50 dark:from-slate-900 via-white dark:via-slate-800 to-purple-50 dark:to-slate-900 p-4">
-      <div className="bg-white dark:bg-slate-800 shadow-2xl rounded-3xl w-full max-w-md overflow-hidden">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl w-full max-w-md overflow-hidden">
         <div className="bg-gradient-to-r from-slate-400 to-slate-500 p-8 text-white text-center">
           <div className="mb-3 text-6xl">🔒</div>
           <h1 className="font-black text-2xl">Allaqachon yechilgan</h1>
@@ -127,7 +127,7 @@ export default function StudentQuizPage() {
             </div>
           </div>
           <button onClick={() => navigate("/student/tests")}
-            className="bg-indigo-500 hover:bg-indigo-600 py-4 border-none rounded-2xl w-full font-black text-white active:scale-95 transition-all cursor-pointer">
+            className="bg-brand-500 hover:bg-brand-600 py-4 border-none rounded-2xl w-full font-black text-white active:scale-95 transition-all cursor-pointer">
             Testlarga qaytish →
           </button>
         </div>
@@ -141,7 +141,7 @@ export default function StudentQuizPage() {
         <div className="mb-3 text-5xl">😕</div>
         <p className="font-bold text-slate-500 dark:text-slate-400">Test topilmadi</p>
         <button onClick={() => navigate("/student/tests")}
-          className="bg-indigo-500 mt-4 px-6 py-2 border-none rounded-full font-bold text-white cursor-pointer">
+          className="bg-brand-500 mt-4 px-6 py-2 border-none rounded-full font-bold text-white cursor-pointer">
           Orqaga
         </button>
       </div>
@@ -152,8 +152,8 @@ export default function StudentQuizPage() {
   if (phase === "intro") return (
     <div className="z-50 fixed inset-0 flex justify-center items-center bg-gradient-to-br from-indigo-50 dark:from-slate-900 via-white dark:via-slate-800 to-purple-50 dark:to-slate-900 p-4">
       <div className="w-full max-w-md">
-        <div className="bg-white dark:bg-slate-800 shadow-2xl rounded-3xl overflow-hidden">
-          <div className="relative bg-gradient-to-r from-indigo-500 to-purple-600 p-8 overflow-hidden text-white text-center">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden">
+          <div className="relative bg-gradient-to-r from-brand-500 to-brand-600 p-8 overflow-hidden text-white text-center">
             <div className="absolute inset-0 opacity-10" style={{
               backgroundImage: "radial-gradient(circle at 20% 50%, white 1px, transparent 1px)",
               backgroundSize: "30px 30px"
@@ -186,7 +186,7 @@ export default function StudentQuizPage() {
             </div>
 
             <button onClick={() => setPhase("quiz")}
-              className="bg-gradient-to-r from-indigo-500 hover:from-indigo-600 to-purple-600 hover:to-purple-700 py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer">
+              className="bg-brand-500 hover:bg-brand-600 py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer">
               🚀 Testni Boshlash
             </button>
             <button onClick={() => navigate("/student/tests")}
@@ -203,14 +203,14 @@ export default function StudentQuizPage() {
   if (phase === "result") {
     const score = result?.score ?? 0;
     const coinsEarned = result?.coinsEarned ?? 0;
-    const grade = score >= 90 ? { emoji: "🏆", label: "A'lo!", color: "from-yellow-400 to-amber-500" }
-                : score >= 70 ? { emoji: "🌟", label: "Yaxshi!", color: "from-green-400 to-emerald-500" }
-                : score >= 50 ? { emoji: "👍", label: "O'rtacha", color: "from-blue-400 to-indigo-500" }
-                : { emoji: "💪", label: "Harakat qiling!", color: "from-rose-400 to-pink-500" };
+    const grade = score >= 90 ? { emoji: "🏆", label: "A'lo!", color: "from-brand-400 to-brand-500" }
+                : score >= 70 ? { emoji: "🌟", label: "Yaxshi!", color: "from-brand-400 to-brand-500" }
+                : score >= 50 ? { emoji: "👍", label: "O'rtacha", color: "from-brand-400 to-brand-500" }
+                : { emoji: "💪", label: "Harakat qiling!", color: "from-brand-400 to-brand-500" };
     return (
       <div className="z-50 fixed inset-0 flex justify-center items-center bg-gradient-to-br from-indigo-50 dark:from-slate-900 via-white dark:via-slate-800 to-purple-50 dark:to-slate-900 p-4">
         <div className="w-full max-w-md">
-          <div className="bg-white dark:bg-slate-800 shadow-2xl rounded-3xl overflow-hidden">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl overflow-hidden">
             <div className={`bg-gradient-to-r ${grade.color} p-8 text-white text-center`}>
               <div className="mb-2 text-7xl animate-bounce">{grade.emoji}</div>
               <div className="font-black text-4xl">{score}%</div>
@@ -238,7 +238,7 @@ export default function StudentQuizPage() {
                 </div>
               </div>
               <button onClick={() => navigate("/student/tests")}
-                className="bg-gradient-to-r from-indigo-500 hover:from-indigo-600 to-purple-600 hover:to-purple-700 py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer">
+                className="bg-brand-500 hover:bg-brand-600 py-4 border-none rounded-2xl w-full font-black text-white text-base active:scale-95 transition-all cursor-pointer">
                 Testlarga qaytish →
               </button>
             </div>
@@ -289,7 +289,7 @@ export default function StudentQuizPage() {
       {/* QUESTION - Full screen on mobile */}
       <div className="flex flex-col flex-1 mx-auto px-3 py-4 w-full md:max-w-2xl">
         {/* Mobile timer */}
-        <div className="md:hidden flex justify-between items-center bg-white dark:bg-slate-800 shadow-sm mb-4 p-3 rounded-2xl">
+        <div className="md:hidden flex justify-between items-center bg-white dark:bg-slate-800 mb-4 p-3 rounded-2xl">
           <div className="flex items-center gap-2">
             <span className={`font-black text-lg ${timerPct > 25 ? 'text-green-500' : 'text-red-500'}`}>
               {formatTime(timeLeft)}
@@ -299,7 +299,7 @@ export default function StudentQuizPage() {
           <span className="font-black text-amber-500">🪙{quiz.maxCoins}</span>
         </div>
 
-        <div className="bg-white dark:bg-slate-800 shadow-lg dark:shadow-slate-900 mb-4 p-4 rounded-2xl"
+        <div className="bg-white dark:bg-slate-800 mb-4 p-4 rounded-2xl"
           style={{ opacity: animDir === "out" ? 0 : 1, transform: animDir === "out" ? "translateX(-30px)" : "translateX(0)", transition: "all 0.3s ease" }}>
           <div className="flex items-center gap-3 mb-3">
             <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-3 py-1.5 rounded-xl font-black text-white text-xs">
@@ -316,9 +316,9 @@ export default function StudentQuizPage() {
             const isCorrect  = confirmed && oi === Number(q.correct);
             const isWrong    = confirmed && isSelected && oi !== Number(q.correct);
             let bg = "bg-white dark:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200";
-            if (isCorrect)       bg = "bg-green-500 border-green-500 text-white shadow-lg shadow-green-200 dark:shadow-none";
+            if (isCorrect)       bg = "bg-brand-500 border-brand-500 text-white";
             else if (isWrong)    bg = "bg-red-400 border-red-400 text-white";
-            else if (isSelected) bg = "bg-indigo-500 border-indigo-500 text-white shadow-lg shadow-indigo-200 dark:shadow-none";
+            else if (isSelected) bg = "bg-brand-500 border-brand-500 text-white";
             return (
               <button key={oi} onClick={() => handleSelect(oi)} disabled={confirmed}
                 className={`w-full flex items-center gap-3 p-3 rounded-xl border-2 font-bold text-left transition-all cursor-pointer ${bg}`}

@@ -66,7 +66,7 @@ const SETTINGS = [
             { icon: "⭐", label: "Top Student"     },
           ].map(a => (
             <div key={a.label} className="flex flex-col items-center gap-1">
-              <div className="flex justify-center items-center bg-amber-50 dark:bg-amber-900/30 rounded-2xl w-12 h-12 text-2xl">{a.icon}</div>
+              <div className="flex justify-center items-center bg-brand-50 dark:bg-brand-900/30 rounded-2xl w-12 h-12 text-2xl">{a.icon}</div>
               <span className="font-bold text-[10px] text-slate-500 dark:text-slate-400">{a.label}</span>
             </div>
           ))}
