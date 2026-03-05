@@ -1,23 +1,28 @@
 // src/pages/teacher/TeacherStudentsPage.jsx
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { Avatar, SectionLabel, Modal } from "../../components/ui";
 import { FaPlus, FaUsers, FaCoins, FaTrophy, FaMedal, FaUserPlus, FaCheck, FaExclamationTriangle } from "react-icons/fa";
 
 const COLORS = ["#22c55e","#3b82f6","#f97316","#8b5cf6","#ef4444","#eab308","#06b6d4","#ec4899"];
-const BLANK  = { login: "", name: "", email: "", password: "", class: "", color: "#22c55e" };
+const BLANK  = { login: "", name: "", email: "", password: "", class: "", color: "#22c55e", useExistingClass: "yes" };
 
 export default function TeacherStudentsPage() {
-  const { students, getStudentCoins, createStudent, showToast } = useApp();
+  const { students, getStudentCoins, createStudent, showToast, classes } = useApp();
   const navigate = useNavigate();
-  const [classFilter, setClassFilter] = useState("All");
+  const [searchParams] = useSearchParams();
+  const [classFilter, setClassFilter] = useState(() => {
+    const classParam = searchParams.get("class");
+    return classParam || "All";
+  });
   const [showModal, setShowModal]     = useState(false);
   const [form, setForm]               = useState({ ...BLANK });
   const [loading, setLoading]         = useState(false);
   const [createdInfo, setCreatedInfo] = useState(null);
 
-  const classes  = ["All", ...new Set(students.map(s => s.class).filter(Boolean))];
+  // Use classes from context (auto-updated when new class is added)
+  const classOptions = ["All", ...classes.map(c => c.name)];
   const filtered = students
     .filter(s => classFilter === "All" || s.class === classFilter)
     .sort((a, b) => getStudentCoins(b._id) - getStudentCoins(a._id));
@@ -50,7 +55,7 @@ export default function TeacherStudentsPage() {
   const medals = [<FaMedal className="text-yellow-500" />, <FaMedal className="text-gray-400" />, <FaMedal className="text-amber-600" />];
 
   return (
-    <div className="space-y-5 p-5 md:p-0">
+    <div className="space-y-5 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 max-w-7xl">
 
       {/* Header */}
       <div className="flex justify-between items-center">
@@ -82,9 +87,9 @@ export default function TeacherStudentsPage() {
         </div>
       </div>
 
-      {/* Class filter */}
+{/* Class filter */}
       <div className="flex gap-2 pb-1 overflow-x-auto" style={{scrollbarWidth:"none"}}>
-        {classes.map(c => (
+        {classOptions.map(c => (
           <button key={c} onClick={() => setClassFilter(c)}
             className={"px-4 py-2 rounded-full text-xs font-extrabold whitespace-nowrap border-none cursor-pointer transition-all " +
               (classFilter === c ? "bg-slate-800 dark:bg-slate-600 text-white" : "bg-white dark:bg-slate-700 text-slate-500 dark:text-slate-300")}>
@@ -144,9 +149,47 @@ export default function TeacherStudentsPage() {
             <input type="text" placeholder="Password * (e.g. student123)" value={form.password}
               onChange={e => setForm(f => ({...f, password: e.target.value}))}
               className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
-            <input type="text" placeholder="Class (e.g. 8-B)" value={form.class}
-              onChange={e => setForm(f => ({...f, class: e.target.value}))}
-              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
+            {classes.length > 0 && (
+              <>
+                <div className="flex gap-2 mb-2">
+                  <button
+                    type="button"
+                    onClick={() => setForm(f => ({...f, useExistingClass: "yes"}))}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold border-none cursor-pointer transition-all ${form.useExistingClass === "yes" ? "bg-brand-500 text-white" : "bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300"}`}
+                  >
+                    Select Existing Class
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setForm(f => ({...f, useExistingClass: "no", class: ""}))}
+                    className={`flex-1 py-2 rounded-lg text-xs font-bold border-none cursor-pointer transition-all ${form.useExistingClass === "no" ? "bg-brand-500 text-white" : "bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-300"}`}
+                  >
+                    Create New Class
+                  </button>
+                </div>
+                {form.useExistingClass === "yes" ? (
+                  <select
+                    value={form.class}
+                    onChange={e => setForm(f => ({...f, class: e.target.value}))}
+                    className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all"
+                  >
+                    <option value="">Select a class</option>
+                    {classes.map(c => (
+                      <option key={c._id} value={c.name}>{c.name}</option>
+                    ))}
+                  </select>
+                ) : (
+                  <input type="text" placeholder="New class name (e.g. 8-B)" value={form.class}
+                    onChange={e => setForm(f => ({...f, class: e.target.value}))}
+                    className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
+                )}
+              </>
+            )}
+            {classes.length === 0 && (
+              <input type="text" placeholder="Class (e.g. 8-B)" value={form.class}
+                onChange={e => setForm(f => ({...f, class: e.target.value}))}
+                className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
+            )}
             <div>
               <p className="mb-2 font-bold text-slate-500 dark:text-slate-400 text-xs">Avatar Color</p>
               <div className="flex flex-wrap gap-2">

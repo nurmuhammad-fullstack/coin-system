@@ -29,7 +29,7 @@ export default function StudentHomePage() {
   ];
 
   return (
-    <div className="space-y-5 p-5 md:p-0">
+    <div className="space-y-5 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 max-w-7xl">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

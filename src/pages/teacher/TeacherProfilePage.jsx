@@ -16,6 +16,8 @@ const handleSettingsClick = (label) => {
       navigate("/account-settings");
     } else if (label === "Notifications") {
       navigate("/notifications");
+    } else if (label === "Help & Support") {
+      navigate("/teacher/help");
     }
   };
 
@@ -28,7 +30,7 @@ const handleSettingsClick = (label) => {
   ];
 
   return (
-    <div className="space-y-4 p-5">
+    <div className="space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 max-w-7xl">
       {/* Profile */}
       <Card className="p-6 text-center">
         <div className="flex justify-center mb-3">

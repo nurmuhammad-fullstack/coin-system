@@ -27,7 +27,7 @@ export default function StudentWalletPage() {
   const totalSpent  = allTxs.filter(t => t.type === "spend").reduce((a, t) => a + Math.abs(t.amount), 0);
 
   return (
-    <div className="space-y-4 p-5">
+    <div className="space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 max-w-7xl">
       <div className="flex justify-between items-center">
         <h2 className="font-poppins font-black text-white text-2xl">My Wallet</h2>
         <button className="bg-transparent border-none text-xl cursor-pointer">

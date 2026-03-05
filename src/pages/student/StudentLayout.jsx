@@ -2,7 +2,7 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { Toast, Avatar } from "../../components/ui";
-import { FaHome, FaWallet, FaGift, FaTrophy, FaEdit, FaUser, FaCoins, FaGraduationCap, FaSignOutAlt, FaBell } from "react-icons/fa";
+import { FaHome, FaWallet, FaGift, FaTrophy, FaEdit, FaUser, FaCoins, FaGraduationCap, FaSignOutAlt, FaBell, FaQuestionCircle, FaCommentDots } from "react-icons/fa";
 
 const TABS = [
   { id: "home",    label: "Home",    icon: FaHome,    path: "/student/home"    },
@@ -11,6 +11,8 @@ const TABS = [
   { id: "leaderboard", label: "Leaderboard", icon: FaTrophy, path: "/student/leaderboard" },
   { id: "tests",   label: "Tests",   icon: FaEdit,    path: "/student/tests"   },
   { id: "profile", label: "Profile", icon: FaUser,    path: "/student/profile" },
+  { id: "chat", label: "Chat", icon: FaCommentDots, path: "/chat" },
+  { id: "help", label: "Help", icon: FaQuestionCircle, path: "/student/help" },
 ];
 
 export default function StudentLayout() {

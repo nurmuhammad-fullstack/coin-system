@@ -17,10 +17,12 @@ const handleSettingsClick = (label) => {
       navigate("/account-settings");
     } else if (label === "Notifications") {
       navigate("/notifications");
+    } else if (label === "Help & Support") {
+      navigate("/student/help");
     }
   };
 
-const SETTINGS = [
+  const SETTINGS = [
     { icon: "⚙️", label: "Account Settings" },
     { icon: "🔔", label: "Notifications", badge: true },
     { icon: "❓", label: "Help & Support"   },
@@ -28,7 +30,7 @@ const SETTINGS = [
   ];
 
   return (
-    <div className="space-y-4 p-5">
+    <div className="space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 max-w-7xl">
       {/* Profile header */}
       <Card className="p-6 text-center">
         <div className="flex justify-center mb-3">

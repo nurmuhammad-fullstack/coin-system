@@ -53,7 +53,8 @@ export const authAPI = {
 // ── Students ─────────────────────────────────────
 export const studentsAPI = {
   getLeaderboard: ()              => request('GET',    '/students/leaderboard'),
-  getAll:          ()              => request('GET',    '/students'),
+  getAll:          ()              => request('GET',    '/students/all'),  // Changed to /all for chat
+  getAllForStudents: ()            => request('GET',    '/students'),       // Original for Students page
   getOne:          (id)            => request('GET',    `/students/${id}`),
   deleteOne:       (id)            => request('DELETE', `/students/${id}`),
   getTransactions: (id)            => request('GET',    `/students/${id}/transactions`),
@@ -89,7 +90,48 @@ export const notificationsAPI = {
   getAll:         ()               => request('GET',    '/notifications'),
   getUnreadCount: ()              => request('GET',    '/notifications/unread-count'),
   markAsRead:     (id)            => request('PUT',    `/notifications/${id}/read`),
-  markAllAsRead:  ()              => request('PUT',    '/notifications/read-all'),
-  delete:         (id)            => request('DELETE', `/notifications/${id}`),
-  clearAll:       ()              => request('DELETE', '/notifications/clear-all'),
+  markAllAsRead:  ()               => request('PUT',    '/notifications/read-all'),
+  delete:         (id)             => request('DELETE', `/notifications/${id}`),
+  clearAll:       ()               => request('DELETE', '/notifications/clear-all'),
+};
+
+// ── Classes ──────────────────────────────────────
+export const classesAPI = {
+  getAll:     ()               => request('GET',    '/classes'),
+  getForStudent: ()            => request('GET',   '/classes/student'),
+  create:     (data)           => request('POST',  '/classes', data),
+  update:     (id, data)       => request('PUT',   `/classes/${id}`, data),
+  delete:     (id)             => request('DELETE', `/classes/${id}`),
+};
+
+// ── Analytics ────────────────────────────────────
+export const analyticsAPI = {
+  getOverview:  ()             => request('GET',    '/analytics/overview'),
+  getQuizzes:   ()             => request('GET',    '/analytics/quizzes'),
+  getStudents:  ()             => request('GET',    '/analytics/students'),
+  getCoins:     ()             => request('GET',    '/analytics/coins'),
+  getShop:       ()             => request('GET',    '/analytics/shop'),
+  getClasses:    ()             => request('GET',    '/analytics/classes'),
+};
+
+// ── Chat ─────────────────────────────────────────
+export const chatAPI = {
+  // Conversations
+  getConversations: ()              => request('GET',    '/chat/conversations'),
+  createConversation: (partnerId)   => request('POST',  '/chat/conversations', { partnerId }),
+  getConversation: (conversationId) => request('GET',   `/chat/conversations/${conversationId}`),
+  markConversationRead: (conversationId) => request('PUT', `/chat/conversations/${conversationId}/read`),
+  
+  // Messages
+  getMessages: (conversationId, page = 1, limit = 50) => 
+    request('GET',    `/chat/messages/${conversationId}?page=${page}&limit=${limit}`),
+  sendMessage: (conversationId, content, type = 'text', attachment = null, replyTo = null) => 
+    request('POST',   `/chat/messages/${conversationId}`, { content, type, attachment, replyTo }),
+  markMessageRead: (messageId)      => request('PUT',   `/chat/messages/${messageId}/read`),
+  addReaction: (messageId, emoji)   => request('POST',  `/chat/messages/${messageId}/reaction`, { emoji }),
+  deleteMessage: (messageId)       => request('DELETE', `/chat/messages/${messageId}`),
+  
+  // Utilities
+  getUnreadCount: ()                => request('GET',   '/chat/unread'),
+  getStudents: ()                   => request('GET',   '/chat/students'),
 };

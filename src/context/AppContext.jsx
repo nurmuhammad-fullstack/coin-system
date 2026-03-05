@@ -1,6 +1,6 @@
 // src/context/AppContext.jsx
 import { createContext, useContext, useState, useEffect } from "react";
-import { authAPI, studentsAPI, shopAPI, quizzesAPI, notificationsAPI } from "../services/api";
+import { authAPI, studentsAPI, shopAPI, quizzesAPI, notificationsAPI, classesAPI } from "../services/api";
 import { FaCoins } from "react-icons/fa";
 
 const AppContext = createContext(null);
@@ -15,6 +15,7 @@ export function AppProvider({ children }) {
   const [quizAttempts, setQuizAttempts] = useState([]);
   const [notifications, setNotifications] = useState([]);
   const [unreadCount, setUnreadCount]   = useState(0);
+  const [classes, setClasses]           = useState([]);
   const [toast, setToast]               = useState(null);
   const [loading, setLoading]           = useState(true);
   
@@ -50,15 +51,17 @@ export function AppProvider({ children }) {
 
   useEffect(() => {
     if (currentUser?.role === "teacher") {
-      studentsAPI.getAll().then(setStudents).catch(console.error);
+      studentsAPI.getAllForStudents().then(setStudents).catch(console.error);
       shopAPI.getAll().then(setShopItems).catch(console.error);
       quizzesAPI.getAll().then((data) => { setQuizzes(data); setQuizzesLoaded(true); }).catch(console.error);
+      classesAPI.getAll().then(setClasses).catch(console.error);
     }
     if (currentUser?.role === "student") {
       // Use leaderboard endpoint for students (no teacher required)
       studentsAPI.getLeaderboard().then(setStudents).catch(console.error);
       shopAPI.getAll().then(setShopItems).catch(console.error);
       quizzesAPI.getAll().then((data) => { setQuizzes(data); setQuizzesLoaded(true); }).catch(console.error);
+      classesAPI.getForStudent().then(setClasses).catch(console.error);
       quizzesAPI.myAttempts().then(setQuizAttempts).catch(console.error);
       // Load student transactions
       studentsAPI.getTransactions(currentUser._id)
@@ -213,14 +216,32 @@ export function AppProvider({ children }) {
     setQuizzes(prev => prev.filter(q => (q._id || q.id) !== id));
   };
 
-  // ✅ timeTaken ham yuboriladi backend ga
+  // timeTaken ham yuboriladi backend ga
   const submitQuizAttempt = async (quizId, answers, timeTaken = 0) => {
     const res = await quizzesAPI.submitAttempt(quizId, answers, timeTaken);
     setQuizAttempts(prev => [...prev, res.attempt || res]);
     if (res.coinsEarned > 0) {
       setCurrentUser(prev => ({ ...prev, coins: (prev.coins || 0) + res.coinsEarned }));
     }
-return res;
+    return res;
+  };
+
+  // Class Management
+  const createClass = async (data) => {
+    const res = await classesAPI.create(data);
+    setClasses(prev => [...prev, res]);
+    return res;
+  };
+
+  const updateClass = async (id, data) => {
+    const res = await classesAPI.update(id, data);
+    setClasses(prev => prev.map(c => (c._id || c.id) === id ? res : c));
+    return res;
+  };
+
+  const deleteClass = async (id) => {
+    await classesAPI.delete(id);
+    setClasses(prev => prev.filter(c => (c._id || c.id) !== id));
   };
 
   // Notification helpers
@@ -276,7 +297,7 @@ return res;
     );
   }
 
-return (
+  return (
     <AppContext.Provider value={{
       currentUser, login, logout, updateCurrentUser, uploadAvatar,
       students, setStudents,
@@ -291,6 +312,7 @@ return (
       quizAttempts, setQuizAttempts,
       createQuiz, updateQuiz, deleteQuiz,
       submitQuizAttempt,
+      classes, setClasses, createClass, updateClass, deleteClass,
       notifications, unreadCount,
       loadNotifications, markNotificationAsRead, markAllNotificationsAsRead, clearAllNotifications,
       toast, showToast,

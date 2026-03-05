@@ -1,6 +1,6 @@
 // src/pages/LoginPage.jsx
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { FaGraduationCap, FaChalkboardTeacher, FaUser, FaLock, FaEye, FaEyeSlash } from "react-icons/fa";
 
@@ -121,6 +121,15 @@ export default function LoginPage() {
         <p className="mt-6 text-slate-400 dark:text-slate-500 text-xs text-center">
           2026 CoinEd. All rights reserved.
         </p>
+        <div className="flex justify-center gap-3 mt-2">
+          <Link to="/terms" className="text-slate-400 hover:text-brand-500 dark:text-slate-500 text-xs transition-colors">
+            Terms of Service
+          </Link>
+          <span className="text-slate-300 dark:text-slate-600">•</span>
+          <Link to="/privacy" className="text-slate-400 hover:text-brand-500 dark:text-slate-500 text-xs transition-colors">
+            Privacy Policy
+          </Link>
+        </div>
       </div>
     </div>
   );

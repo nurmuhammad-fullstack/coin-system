@@ -101,7 +101,7 @@ export default function TeacherStudentDetailPage() {
   };
 
   return (
-    <div className="space-y-4 p-5 md:p-0">
+    <div className="space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 max-w-7xl">
       {/* Back button */}
       <button onClick={() => navigate("/teacher/students")}
         className="flex items-center gap-2 bg-transparent border-none font-bold text-slate-500 hover:text-slate-800 dark:hover:text-white text-sm transition-colors cursor-pointer">

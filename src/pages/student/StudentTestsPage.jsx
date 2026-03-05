@@ -19,7 +19,7 @@ export default function StudentTestsPage() {
     .reduce((sum, q) => sum + (q.attempt?.coinsEarned || 0), 0);
 
   return (
-    <div className="space-y-5 p-5 md:p-0">
+    <div className="space-y-5 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 max-w-7xl">
       {/* Header */}
       <div>
         <p className="font-semibold text-slate-500 dark:text-slate-400 text-xs">Earn coins by completing</p>

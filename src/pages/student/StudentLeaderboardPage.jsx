@@ -23,7 +23,7 @@ export default function StudentLeaderboardPage() {
   ];
 
   return (
-    <div className="space-y-5 p-5 pb-10">
+    <div className="space-y-5 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 pb-10 max-w-7xl">
       <div className="pt-2 text-center">
         <p className="mb-1 font-bold text-amber-400 text-xs uppercase tracking-widest">CoinEd</p>
         <h1 className="font-black text-slate-800 dark:text-white text-3xl">Leaderboard 🏆</h1>

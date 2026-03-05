@@ -413,7 +413,7 @@ export default function AccountSettingsPage() {
       </div>
 
       {/* Mobile Layout */}
-      <div className="md:hidden space-y-4 p-5">
+      <div className="md:hidden space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 max-w-7xl">
         <BackButton onClick={() => navigate(-1)} label="Back" />
         
         <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">Account Settings</h1>

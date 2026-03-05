@@ -21,7 +21,7 @@ export default function StudentRewardsPage() {
   };
 
   return (
-    <div className="space-y-4 p-5">
+    <div className="space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 max-w-7xl">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>

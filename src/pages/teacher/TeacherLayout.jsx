@@ -2,13 +2,17 @@
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { Toast, Avatar } from "../../components/ui";
-import { FaUsers, FaClipboardList, FaStore, FaUser, FaCoins, FaChalkboardTeacher, FaSignOutAlt, FaBell } from "react-icons/fa";
+import { FaUsers, FaClipboardList, FaStore, FaUser, FaCoins, FaChalkboardTeacher, FaSignOutAlt, FaBell, FaSchool, FaChartLine, FaQuestionCircle, FaCommentDots } from "react-icons/fa";
 
 const TABS = [
   { id: "students", label: "Students", icon: FaUsers,  path: "/teacher/students" },
+  { id: "classes", label: "Classes", icon: FaSchool,  path: "/teacher/classes" },
   { id: "quizzes",  label: "Quizzes",  icon: FaClipboardList,  path: "/teacher/quizzes"  },
   { id: "shop",     label: "Shop",     icon: FaStore,     path: "/teacher/shop"     },
+  { id: "analytics", label: "Analytics", icon: FaChartLine, path: "/teacher/analytics" },
+  { id: "chat", label: "Chat", icon: FaCommentDots, path: "/teacher/chat" },
   { id: "profile",  label: "Profile",  icon: FaUser, path: "/teacher/profile"  },
+  { id: "help", label: "Help", icon: FaQuestionCircle, path: "/teacher/help" },
 ];
 
 export default function TeacherLayout() {

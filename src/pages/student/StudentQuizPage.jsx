@@ -23,6 +23,7 @@ export default function StudentQuizPage() {
   const [result, setResult]         = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [animDir, setAnimDir]       = useState("in");
+  const [correctAnswers, setCorrectAnswers] = useState([]); // To'g'ri javoblar
   const startTimeRef                = useRef(null);
   const phaseSetRef                 = useRef(false); // ✅ faqat bir marta ishlasin
 
@@ -46,6 +47,9 @@ export default function StudentQuizPage() {
         correct: done.correct,
         total: totalQ,
       });
+      // To'g'ri javoblarni hisoblash - quizdan olish
+      const correctAnswersFromQuiz = quiz.questions.map(q => q.correct);
+      setCorrectAnswers(correctAnswersFromQuiz);
       setPhase("already");
     } else {
       setPhase("intro");
@@ -101,6 +105,10 @@ export default function StudentQuizPage() {
     try {
       const res = await submitQuizAttempt(id, finalAnswers, timeTaken);
       setResult(res);
+      // To'g'ri javoblarni saqlash
+      if (res.correctAnswers) {
+        setCorrectAnswers(res.correctAnswers);
+      }
       setPhase("result"); // ✅ to'g'ridan result ga o'tadi
     } catch (err) {
       if (err.message?.includes("Already completed")) {
@@ -258,7 +266,10 @@ export default function StudentQuizPage() {
   // QUIZ
   const q          = questions[current];
   const OPT_LABELS = ["A","B","C","D"];
-  const correctIdx = Number(q.correct);
+  // Submitdan kelgan to'g'ri javoblardan foydalanish
+  const correctIdx = correctAnswers.length > 0 
+    ? Number(correctAnswers[current]) 
+    : Number(q.correct);
 
   return (
     <div className="flex flex-col bg-gradient-to-br from-slate-50 to-indigo-50 min-h-screen">

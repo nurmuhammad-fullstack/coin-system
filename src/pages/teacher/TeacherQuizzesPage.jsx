@@ -65,7 +65,7 @@
 
     /* ── LIST VIEW ── */
     if(view==="list") return (
-      <div className="p-5 md:p-0">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 max-w-7xl">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
@@ -136,7 +136,7 @@
 
     /* ── CREATE VIEW ── */
     return (
-      <div className="p-5 md:p-0 pb-12">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 pb-12 max-w-7xl">
         <div className="flex items-center gap-3 mb-7">
           <button onClick={()=>setView("list")}
             className="flex justify-center items-center bg-white hover:bg-indigo-50 dark:bg-slate-700 dark:hover:bg-indigo-900/30 border border-slate-200 dark:border-slate-600 border-none rounded-xl w-9 h-9 text-slate-500 dark:text-slate-300 text-base transition-colors cursor-pointer">

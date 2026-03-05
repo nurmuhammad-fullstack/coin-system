@@ -51,7 +51,7 @@ export default function TeacherShopPage() {
   };
 
   return (
-    <div className="space-y-4 p-5 md:p-0">
+    <div className="space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 max-w-7xl">
       {/* Header */}
       <div className="flex justify-between items-center">
         <h2 className="font-poppins font-black text-slate-800 dark:text-white text-2xl md:text-3xl">Manage Shop</h2>
