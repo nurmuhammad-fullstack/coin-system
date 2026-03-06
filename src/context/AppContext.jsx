@@ -87,6 +87,15 @@ export function AppProvider({ children }) {
     setTimeout(() => setToast(null), 2800);
   };
 
+  // Error handler for background API calls (shows toast only once to avoid spam)
+  const handleBackgroundError = (error, defaultMessage) => {
+    console.error(defaultMessage, error);
+    // Only show toast if it's a critical error (not network issues on load)
+    if (error?.message && !error.message.includes('network')) {
+      showToast(`❌ ${defaultMessage}: ${error.message}`, "error");
+    }
+  };
+
   const login = async (email, password) => {
     try {
       const data = await authAPI.login(email, password);
@@ -133,32 +142,55 @@ export function AppProvider({ children }) {
   };
 
   const createStudent = async (data) => {
-    const res = await authAPI.createStudent(data);
-    setStudents(prev => [...prev, res.user || res]);
-    return res;
+    try {
+      const res = await authAPI.createStudent(data);
+      setStudents(prev => [...prev, res.user || res]);
+      return { ok: true, user: res.user || res };
+    } catch (err) {
+      console.error('Create student error:', err);
+      return { ok: false, message: err.message || "Failed to create student" };
+    }
   };
 
   const deleteStudent = async (studentId) => {
-    await studentsAPI.deleteOne(studentId);
-    setStudents(prev => prev.filter(s => s._id !== studentId));
+    try {
+      await studentsAPI.deleteOne(studentId);
+      setStudents(prev => prev.filter(s => s._id !== studentId));
+      return { ok: true };
+    } catch (err) {
+      console.error('Delete student error:', err);
+      return { ok: false, message: err.message || "Failed to delete student" };
+    }
   };
 
   const addCoins = async (studentId, amount, label = "Teacher Bonus") => {
-    const res = await studentsAPI.addCoins(studentId, amount, label, "behavior");
-    setStudents(prev => prev.map(s => s._id === studentId ? { ...s, coins: res.student.coins } : s));
-    setTransactions(prev => ({
-      ...prev,
-      [studentId]: [{ _id: Date.now(), label, type: "earn", amount, date: "Just now" }, ...(prev[studentId] || [])]
-    }));
+    try {
+      const res = await studentsAPI.addCoins(studentId, amount, label, "behavior");
+      setStudents(prev => prev.map(s => s._id === studentId ? { ...s, coins: res.student.coins } : s));
+      setTransactions(prev => ({
+        ...prev,
+        [studentId]: [{ _id: Date.now(), label, type: "earn", amount, date: "Just now" }, ...(prev[studentId] || [])]
+      }));
+      return { ok: true };
+    } catch (err) {
+      console.error('Add coins error:', err);
+      return { ok: false, message: err.message || "Failed to add coins" };
+    }
   };
 
   const removeCoins = async (studentId, amount, label = "Teacher Deduction") => {
-    const res = await studentsAPI.removeCoins(studentId, amount, label, "behavior");
-    setStudents(prev => prev.map(s => s._id === studentId ? { ...s, coins: res.student.coins } : s));
-    setTransactions(prev => ({
-      ...prev,
-      [studentId]: [{ _id: Date.now(), label, type: "spend", amount: -amount, date: "Just now" }, ...(prev[studentId] || [])]
-    }));
+    try {
+      const res = await studentsAPI.removeCoins(studentId, amount, label, "behavior");
+      setStudents(prev => prev.map(s => s._id === studentId ? { ...s, coins: res.student.coins } : s));
+      setTransactions(prev => ({
+        ...prev,
+        [studentId]: [{ _id: Date.now(), label, type: "spend", amount: -amount, date: "Just now" }, ...(prev[studentId] || [])]
+      }));
+      return { ok: true };
+    } catch (err) {
+      console.error('Remove coins error:', err);
+      return { ok: false, message: err.message || "Failed to remove coins" };
+    }
   };
 
   const spendCoins = async (userId, amount, itemName) => {

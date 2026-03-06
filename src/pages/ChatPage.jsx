@@ -156,9 +156,12 @@ export default function ChatPage() {
       chatAPI
         .getStudents()
         .then(setAllStudents)
-        .catch((err) => console.error("Failed to load students:", err));
+        .catch((err) => {
+          console.error("Failed to load students:", err);
+          showToast("❌ Failed to load students for chat", "error");
+        });
     }
-  }, [isTeacher]);
+  }, [isTeacher, showToast]);
 
   // Load conversations on mount
   useEffect(() => {
@@ -171,7 +174,9 @@ export default function ChatPage() {
       joinConversation(selectedConversation._id);
       loadMessages(selectedConversation._id);
       // Mark as read
-      chatAPI.markConversationRead(selectedConversation._id).catch(console.error);
+      chatAPI.markConversationRead(selectedConversation._id).catch((err) => {
+        console.error("Failed to mark conversation as read:", err);
+      });
     }
     return () => {
       if (selectedConversation?._id) {
@@ -201,7 +206,8 @@ export default function ChatPage() {
       const data = await chatAPI.getConversations();
       setConversations(data);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to load conversations:", err);
+      showToast("❌ Failed to load conversations", "error");
     }
   };
 

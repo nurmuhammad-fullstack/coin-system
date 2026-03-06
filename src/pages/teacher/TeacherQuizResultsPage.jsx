@@ -2,10 +2,12 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Avatar } from "../../components/ui";
+import { useApp } from "../../context/AppContext";
 
 export default function TeacherQuizResultsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { showToast } = useApp();
 
   const [quiz, setQuiz]         = useState(null);
   const [results, setResults]   = useState([]);
@@ -27,20 +29,25 @@ export default function TeacherQuizResultsPage() {
         // Check if responses are OK
         if (!qRes.ok) {
           console.error('Quiz fetch error:', quizData);
+          showToast("❌ " + (quizData.message || "Failed to load quiz"), "error");
           return;
         }
         if (!rRes.ok) {
           console.error('Results fetch error:', resultsData);
+          showToast("❌ " + (resultsData.message || "Failed to load results"), "error");
           setResults([]);
         } else {
           setResults(resultsData);
         }
         setQuiz(quizData);
-      } catch (err) { console.error(err); }
+      } catch (err) { 
+        console.error(err); 
+        showToast("❌ " + (err.message || "Failed to load data"), "error");
+      }
       finally { setLoading(false); }
     };
     load();
-  }, [id, API, token]);
+  }, [id, API, token, showToast]);
 
   if (loading) return <div className="p-6 font-bold text-slate-400 dark:text-slate-500 text-center">Yuklanmoqda...</div>;
   if (!quiz)   return <div className="p-6 font-bold text-slate-400 dark:text-slate-500 text-center">Test topilmadi</div>;

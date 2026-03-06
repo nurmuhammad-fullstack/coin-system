@@ -68,10 +68,18 @@ export default function TeacherStudentDetailPage() {
     const n = parseInt(amount);
     if (!n || n <= 0) { showToast("❌ Enter a valid amount", "error"); return; }
     if (modal === "add") {
-      await addCoins(student._id, n, reason || "Teacher Bonus");
+      const result = await addCoins(student._id, n, reason || "Teacher Bonus");
+      if (!result.ok) {
+        showToast("❌ " + (result.message || "Failed to add coins"), "error");
+        return;
+      }
       showToast(`✅ +${n} coins added!`);
     } else {
-      await removeCoins(student._id, n, reason || "Teacher Deduction");
+      const result = await removeCoins(student._id, n, reason || "Teacher Deduction");
+      if (!result.ok) {
+        showToast("❌ " + (result.message || "Failed to remove coins"), "error");
+        return;
+      }
       showToast(`✅ -${n} coins deducted!`);
     }
     setModal(null); setAmount(""); setReason("");
@@ -79,10 +87,18 @@ export default function TeacherStudentDetailPage() {
 
   const handleQuick = async (qa) => {
     if (qa.type === "add") {
-      await addCoins(student._id, qa.amount, qa.reason);
+      const result = await addCoins(student._id, qa.amount, qa.reason);
+      if (!result.ok) {
+        showToast("❌ " + (result.message || "Failed to add coins"), "error");
+        return;
+      }
       showToast(`✅ +${qa.amount} coins!`);
     } else {
-      await removeCoins(student._id, qa.amount, qa.reason);
+      const result = await removeCoins(student._id, qa.amount, qa.reason);
+      if (!result.ok) {
+        showToast("❌ " + (result.message || "Failed to remove coins"), "error");
+        return;
+      }
       showToast(`✅ -${qa.amount} coins deducted!`);
     }
   };
@@ -90,11 +106,15 @@ export default function TeacherStudentDetailPage() {
   const handleDelete = async () => {
     setDelLoading(true);
     try {
-      await deleteStudent(student._id);
+      const result = await deleteStudent(student._id);
+      if (!result.ok) {
+        showToast("❌ " + (result.message || "Failed to delete student"), "error");
+        return;
+      }
       showToast(`🗑️ ${student.name} removed`);
       navigate("/teacher/students");
     } catch (err) {
-      showToast("❌ " + (err.message || "Failed to delete"), "error");
+      showToast("❌ " + (err.message || "Failed to delete student"), "error");
     } finally {
       setDelLoading(false);
     }

@@ -18,12 +18,15 @@ const getHeaders = () => {
 };
 
 const request = async (method, path, body = null) => {
+  const url = `${BASE_URL}${path}`;
+  console.log(`API Request: ${method} ${url}`, body ? JSON.stringify(body) : '');
   const res = await fetch(`${BASE_URL}${path}`, {
     method,
     headers: getHeaders(),
     ...(body ? { body: JSON.stringify(body) } : {}),
   });
   const data = await res.json();
+  console.log(`API Response: ${res.status}`, JSON.stringify(data));
   if (!res.ok) throw new Error(data.message || 'Request failed');
   return data;
 };

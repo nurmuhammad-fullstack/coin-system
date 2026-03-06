@@ -25,9 +25,13 @@
       try {
         const r = await fetch(`${API}/quizzes`, { headers: { Authorization:`Bearer ${token}` } });
         const d = await r.json();
+        if (!r.ok) throw new Error(d.message || 'Failed to load quizzes');
         setQuizzes(Array.isArray(d) ? d : []);
-      } catch(e){ console.error(e); } finally { setLoading(false); }
-    }, [API, token]);
+      } catch(e){ 
+        console.error(e); 
+        showToast("❌ Failed to load quizzes: " + (e.message || 'Unknown error'), "error");
+      } finally { setLoading(false); }
+    }, [API, token, showToast]);
 
     useEffect(() => { loadQuizzes(); }, [loadQuizzes]);
 

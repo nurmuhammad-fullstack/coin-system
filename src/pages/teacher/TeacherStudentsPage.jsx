@@ -6,7 +6,7 @@ import { Avatar, SectionLabel, Modal } from "../../components/ui";
 import { FaPlus, FaUsers, FaCoins, FaTrophy, FaMedal, FaUserPlus, FaCheck, FaExclamationTriangle } from "react-icons/fa";
 
 const COLORS = ["#22c55e","#3b82f6","#f97316","#8b5cf6","#ef4444","#eab308","#06b6d4","#ec4899"];
-const BLANK  = { login: "", name: "", email: "", password: "", class: "", color: "#22c55e", useExistingClass: "yes" };
+const BLANK  = { email: "", name: "", password: "", class: "", color: "#22c55e", useExistingClass: "yes" };
 
 export default function TeacherStudentsPage() {
   const { students, getStudentCoins, createStudent, showToast, classes } = useApp();
@@ -32,21 +32,60 @@ export default function TeacherStudentsPage() {
   const topCoins = filtered.length ? getStudentCoins(filtered[0]?._id) : 0;
 
   const handleCreate = async () => {
-    if (!form.login || !form.name || !form.password) {
-      showToast("❌ Fill in login, name and password", "error"); return;
+    // Trim whitespace
+    const trimmedEmail = form.email?.trim() || '';
+    const trimmedName = form.name?.trim() || '';
+    const trimmedPassword = form.password?.trim() || '';
+    
+    console.log('Form data before create:', { ...form, password: '***' });
+    
+    if (!trimmedEmail || !trimmedName || !trimmedPassword) {
+      showToast("❌ Fill in email, name and password", "error"); return;
     }
+    
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(trimmedEmail)) {
+      showToast("❌ Please enter a valid email address", "error"); return;
+    }
+    
     setLoading(true);
     try {
-      await createStudent({
-        ...form,
-        avatar: form.name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
-      });
-      setCreatedInfo({ login: form.login, password: form.password, name: form.name });
+      const { useExistingClass, ...studentData } = form;
+      const payload = {
+        ...studentData,
+        email: trimmedEmail,
+        name: trimmedName,
+        password: trimmedPassword,
+        avatar: trimmedName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2),
+      };
+      console.log('Sending create-student request:', { ...payload, password: '***' });
+      
+      const result = await createStudent(payload);
+      
+      if (!result.ok) {
+        // Handle specific error cases with better messages
+        let errorMessage = result.message || "Failed";
+        
+        if (errorMessage.toLowerCase().includes('email already registered') || errorMessage.includes('Email already registered')) {
+          errorMessage = "❌ This email is already registered. Please use a different email.";
+        } else if (errorMessage.toLowerCase().includes('email already in use') || errorMessage.includes('Email already in use')) {
+          errorMessage = "❌ This email is already in use. Please try another one.";
+        } else {
+          errorMessage = "❌ " + errorMessage;
+        }
+        
+        showToast(errorMessage, "error");
+        return;
+      }
+      
+      setCreatedInfo({ login: trimmedEmail, password: trimmedPassword, name: trimmedName });
       setShowModal(false);
       setForm({ ...BLANK });
       showToast("✅ " + form.name + " added!");
     } catch (err) {
-      showToast("❌ " + (err.message || "Failed"), "error");
+      console.error('Create student error:', err);
+      showToast("❌ " + (err.message || "Failed to create student"), "error");
     } finally {
       setLoading(false);
     }
@@ -137,14 +176,11 @@ export default function TeacherStudentsPage() {
             <FaUserPlus /> Add New Student
           </h3>
           <div className="space-y-3 mb-4">
-            <input type="text" placeholder="Login (username) *" value={form.login}
-              onChange={e => setForm(f => ({...f, login: e.target.value}))}
+            <input type="email" placeholder="Email address *" value={form.email}
+              onChange={e => setForm(f => ({...f, email: e.target.value}))}
               className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <input type="text" placeholder="Full name *" value={form.name}
               onChange={e => setForm(f => ({...f, name: e.target.value}))}
-              className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
-            <input type="email" placeholder="Email address (optional)" value={form.email}
-              onChange={e => setForm(f => ({...f, email: e.target.value}))}
               className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all" />
             <input type="text" placeholder="Password * (e.g. student123)" value={form.password}
               onChange={e => setForm(f => ({...f, password: e.target.value}))}
@@ -224,7 +260,7 @@ export default function TeacherStudentsPage() {
             <h3 className="mb-1 font-poppins font-black dark:text-white text-xl">Student Created!</h3>
             <p className="mb-5 text-slate-500 dark:text-slate-400 text-sm">Share these with <b className="dark:text-white">{createdInfo.name}</b></p>
             <div className="space-y-3 bg-slate-50 dark:bg-slate-700 mb-4 p-4 rounded-2xl text-left">
-              <div className="flex justify-between"><span className="font-bold text-slate-400 dark:text-slate-500 text-xs">LOGIN</span><span className="font-extrabold dark:text-white text-sm">{createdInfo.login}</span></div>
+              <div className="flex justify-between"><span className="font-bold text-slate-400 dark:text-slate-500 text-xs">EMAIL</span><span className="font-extrabold dark:text-white text-sm">{createdInfo.login}</span></div>
               <div className="bg-slate-200 dark:bg-slate-600 h-px" />
               <div className="flex justify-between"><span className="font-bold text-slate-400 dark:text-slate-500 text-xs">PASSWORD</span><span className="font-extrabold dark:text-white text-sm">{createdInfo.password}</span></div>
             </div>
