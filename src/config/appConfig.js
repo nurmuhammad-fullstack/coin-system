@@ -1,6 +1,7 @@
 export const APP_NAME = process.env.REACT_APP_APP_NAME || "CoinEd";
 export const APP_TAGLINE =
-  process.env.REACT_APP_APP_TAGLINE || "Education platform for student rewards and growth";
+  process.env.REACT_APP_APP_TAGLINE ||
+  "Education platform for student rewards and growth";
 export const SUPPORT_EMAIL =
   process.env.REACT_APP_SUPPORT_EMAIL || "support@novdaunion.uz";
 export const PRIVACY_EMAIL =

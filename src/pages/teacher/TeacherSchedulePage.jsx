@@ -1,20 +1,28 @@
 import { useState, useEffect, useCallback } from "react";
 import { useApp } from "../../context/AppContext";
 import { SectionLabel } from "../../components/ui";
-import { FaClock, FaCheck, FaBell, FaCalendarAlt, FaSchool } from "react-icons/fa";
+import { Icon } from "../../components/Icons";
+import {
+  FaClock,
+  FaCheck,
+  FaBell,
+  FaCalendarAlt,
+  FaSchool,
+} from "react-icons/fa";
 
 const DAYS = [
-  { value: 'monday', label: 'Dushanba' },
-  { value: 'tuesday', label: 'Seshanba' },
-  { value: 'wednesday', label: 'Chorshanba' },
-  { value: 'thursday', label: 'Payshanba' },
-  { value: 'friday', label: 'Juma' },
-  { value: 'saturday', label: 'Shanba' },
-  { value: 'sunday', label: 'Yakshanba' },
+  { value: "monday", label: "Dushanba" },
+  { value: "tuesday", label: "Seshanba" },
+  { value: "wednesday", label: "Chorshanba" },
+  { value: "thursday", label: "Payshanba" },
+  { value: "friday", label: "Juma" },
+  { value: "saturday", label: "Shanba" },
+  { value: "sunday", label: "Yakshanba" },
 ];
 
 export default function TeacherSchedulePage() {
-  const { classes, getScheduleForClass, updateScheduleForClass, showToast } = useApp();
+  const { classes, getScheduleForClass, updateScheduleForClass, showToast } =
+    useApp();
   const [selectedClass, setSelectedClass] = useState(null);
   const [schedule, setSchedule] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -24,7 +32,7 @@ export default function TeacherSchedulePage() {
   const [form, setForm] = useState({
     enabled: false,
     days: [],
-    time: '09:00',
+    time: "09:00",
     notifyBefore8Hours: true,
     notifyBefore10Minutes: true,
   });
@@ -39,7 +47,7 @@ export default function TeacherSchedulePage() {
           setForm({
             enabled: data.enabled || false,
             days: data.days || [],
-            time: data.time || '09:00',
+            time: data.time || "09:00",
             notifyBefore8Hours: data.notifyBefore8Hours !== false,
             notifyBefore10Minutes: data.notifyBefore10Minutes !== false,
           });
@@ -50,7 +58,7 @@ export default function TeacherSchedulePage() {
         setLoading(false);
       }
     },
-    [getScheduleForClass, showToast]
+    [getScheduleForClass, showToast],
   );
 
   const selectedClassId = selectedClass?._id;
@@ -63,9 +71,9 @@ export default function TeacherSchedulePage() {
 
   const handleSave = async () => {
     if (!selectedClass) return;
-    
+
     if (form.enabled && form.days.length === 0) {
-      showToast("âŒ Select at least one day", "error");
+      showToast("❌ Select at least one day", "error");
       return;
     }
 
@@ -73,7 +81,7 @@ export default function TeacherSchedulePage() {
     try {
       const result = await updateScheduleForClass(selectedClass._id, form);
       if (result.ok) {
-        showToast("âœ… Schedule saved!");
+        showToast("✅ Schedule saved!");
         setSchedule(result.schedule);
       } else {
         showToast(`❌ ${result.message || "Failed to save schedule"}`, "error");
@@ -86,11 +94,11 @@ export default function TeacherSchedulePage() {
   };
 
   const toggleDay = (day) => {
-    setForm(prev => ({
+    setForm((prev) => ({
       ...prev,
       days: prev.days.includes(day)
-        ? prev.days.filter(d => d !== day)
-        : [...prev.days, day]
+        ? prev.days.filter((d) => d !== day)
+        : [...prev.days, day],
     }));
   };
 
@@ -99,8 +107,12 @@ export default function TeacherSchedulePage() {
       {/* Header */}
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-4">
         <div>
-          <p className="font-semibold text-slate-500 dark:text-slate-400 text-xs">Teacher Dashboard</p>
-          <h2 className="font-poppins font-black text-slate-800 dark:text-white text-2xl md:text-3xl">Dars Jadvali</h2>
+          <p className="font-semibold text-slate-500 dark:text-slate-400 text-xs">
+            Teacher Dashboard
+          </p>
+          <h2 className="font-poppins font-black text-slate-800 dark:text-white text-2xl md:text-3xl">
+            Dars Jadvali
+          </h2>
           <p className="mt-1 text-slate-400 dark:text-slate-500 text-xs">
             O'quvchilarga dars kunlari haqida Telegram orqali xabar yuboring
           </p>
@@ -114,10 +126,14 @@ export default function TeacherSchedulePage() {
             <FaBell className="text-blue-500 text-lg" />
           </div>
           <div>
-            <h4 className="font-bold text-blue-700 dark:text-blue-400 text-sm">Avtomatik xabarlar</h4>
+            <h4 className="font-bold text-blue-700 dark:text-blue-400 text-sm">
+              Avtomatik xabarlar
+            </h4>
             <p className="mt-1 text-blue-600 dark:text-blue-300 text-xs">
-              Dars boshlanishidan <strong>8 soat oldin</strong> va <strong>10 daqiqa oldin</strong> o'quvchilaringizga 
-              Telegram orqali xabar keladi. Faqatgina Telegramga ulangan o'quvchilar xabar oladi.
+              Dars boshlanishidan <strong>8 soat oldin</strong> va{" "}
+              <strong>10 daqiqa oldin</strong> o'quvchilaringizga Telegram
+              orqali xabar keladi. Faqatgina Telegramga ulangan o'quvchilar
+              xabar oladi.
             </p>
           </div>
         </div>
@@ -133,15 +149,25 @@ export default function TeacherSchedulePage() {
               onClick={() => setSelectedClass(cls)}
               className={`p-4 rounded-2xl text-left transition-all shadow-sm hover:shadow-md ${
                 selectedClass?._id === cls._id
-                  ? 'bg-brand-50 dark:bg-brand-900/30 ring-2 ring-brand-500'
-                  : 'bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50'
+                  ? "bg-brand-50 dark:bg-brand-900/30 ring-2 ring-brand-500"
+                  : "bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700/50"
               }`}
             >
               <div className="flex items-center gap-2">
-                <FaSchool className={selectedClass?._id === cls._id ? 'text-brand-500' : 'text-slate-400 dark:text-slate-500'} />
-                <span className="font-bold text-slate-700 dark:text-slate-200">{cls.name}</span>
+                <FaSchool
+                  className={
+                    selectedClass?._id === cls._id
+                      ? "text-brand-500"
+                      : "text-slate-400 dark:text-slate-500"
+                  }
+                />
+                <span className="font-bold text-slate-700 dark:text-slate-200">
+                  {cls.name}
+                </span>
               </div>
-              <p className="mt-1 text-slate-400 dark:text-slate-500 text-xs">{cls.studentCount || 0} o'quvchi</p>
+              <p className="mt-1 text-slate-400 dark:text-slate-500 text-xs">
+                {cls.studentCount || 0} o'quvchi
+              </p>
             </button>
           ))}
         </div>
@@ -152,7 +178,8 @@ export default function TeacherSchedulePage() {
         <div className="bg-white dark:bg-slate-800 shadow-lg shadow-slate-200/50 dark:shadow-slate-900/50 p-6 rounded-2xl">
           <div className="flex justify-between items-center mb-5">
             <h3 className="flex items-center gap-2 font-bold text-slate-800 dark:text-white text-lg">
-              <FaCalendarAlt className="text-brand-500" /> {selectedClass.name} - Jadval
+              <FaCalendarAlt className="text-brand-500" /> {selectedClass.name}{" "}
+              - Jadval
             </h3>
             {schedule?.enabled && (
               <span className="bg-green-100 dark:bg-green-900/30 px-3 py-1 rounded-full font-bold text-green-600 dark:text-green-400 text-xs">
@@ -164,18 +191,26 @@ export default function TeacherSchedulePage() {
           {/* Enable Toggle */}
           <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-700/50 mb-5 p-4 rounded-xl">
             <div>
-              <p className="font-bold text-slate-700 dark:text-slate-200">Xabarlarni yoqish</p>
-              <p className="text-slate-500 text-xs">O'quvchilarga avtomatik xabar yuboriladi</p>
+              <p className="font-bold text-slate-700 dark:text-slate-200">
+                Xabarlarni yoqish
+              </p>
+              <p className="text-slate-500 text-xs">
+                O'quvchilarga avtomatik xabar yuboriladi
+              </p>
             </div>
             <button
-              onClick={() => setForm(prev => ({ ...prev, enabled: !prev.enabled }))}
+              onClick={() =>
+                setForm((prev) => ({ ...prev, enabled: !prev.enabled }))
+              }
               className={`w-14 h-8 rounded-full transition-all ${
-                form.enabled ? 'bg-brand-500' : 'bg-slate-300 dark:bg-slate-600'
+                form.enabled ? "bg-brand-500" : "bg-slate-300 dark:bg-slate-600"
               }`}
             >
-              <div className={`w-6 h-6 bg-white rounded-full shadow transition-transform ${
-                form.enabled ? 'translate-x-7' : 'translate-x-1'
-              }`} />
+              <div
+                className={`w-6 h-6 bg-white rounded-full shadow transition-transform ${
+                  form.enabled ? "translate-x-7" : "translate-x-1"
+                }`}
+              />
             </button>
           </div>
 
@@ -187,7 +222,9 @@ export default function TeacherSchedulePage() {
             <input
               type="time"
               value={form.time}
-              onChange={(e) => setForm(prev => ({ ...prev, time: e.target.value }))}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, time: e.target.value }))
+              }
               disabled={!form.enabled}
               className="bg-slate-50 dark:bg-slate-700 disabled:opacity-50 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all"
             />
@@ -206,9 +243,9 @@ export default function TeacherSchedulePage() {
                   disabled={!form.enabled}
                   className={`px-4 py-2 rounded-xl font-bold text-sm transition-all ${
                     form.days.includes(day.value)
-                      ? 'bg-brand-500 text-white'
-                      : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                  } ${!form.enabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
+                      ? "bg-brand-500 text-white"
+                      : "bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600"
+                  } ${!form.enabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                 >
                   {day.label}
                 </button>
@@ -218,13 +255,20 @@ export default function TeacherSchedulePage() {
 
           {/* Notification Options */}
           <div className="space-y-3 mb-5">
-            <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">Xabar variantlari</p>
-            
+            <p className="font-bold text-slate-700 dark:text-slate-200 text-sm">
+              Xabar variantlari
+            </p>
+
             <label className="flex items-center gap-3 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl cursor-pointer">
               <input
                 type="checkbox"
                 checked={form.notifyBefore8Hours}
-                onChange={(e) => setForm(prev => ({ ...prev, notifyBefore8Hours: e.target.checked }))}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    notifyBefore8Hours: e.target.checked,
+                  }))
+                }
                 disabled={!form.enabled}
                 className="rounded focus:ring-brand-500 w-5 h-5 text-brand-500"
               />
@@ -237,7 +281,12 @@ export default function TeacherSchedulePage() {
               <input
                 type="checkbox"
                 checked={form.notifyBefore10Minutes}
-                onChange={(e) => setForm(prev => ({ ...prev, notifyBefore10Minutes: e.target.checked }))}
+                onChange={(e) =>
+                  setForm((prev) => ({
+                    ...prev,
+                    notifyBefore10Minutes: e.target.checked,
+                  }))
+                }
                 disabled={!form.enabled}
                 className="rounded focus:ring-brand-500 w-5 h-5 text-brand-500"
               />
@@ -251,9 +300,15 @@ export default function TeacherSchedulePage() {
           <button
             onClick={handleSave}
             disabled={saving || !form.enabled}
-            className="bg-brand-500 hover:bg-brand-600 disabled:opacity-50 py-4 rounded-xl w-full font-extrabold text-white text-sm transition-all disabled:cursor-not-allowed"
+            className="flex items-center justify-center gap-2 bg-brand-500 hover:bg-brand-600 disabled:opacity-50 py-4 rounded-xl w-full font-extrabold text-white text-sm transition-all disabled:cursor-not-allowed cursor-pointer"
           >
-            {saving ? 'Saqlanmoqda...' : 'ðŸ’¾ Saqlash'}
+            {saving ? (
+              "Saqlanmoqda..."
+            ) : (
+              <>
+                <Icon name="save" size={16} /> Saqlash
+              </>
+            )}
           </button>
         </div>
       )}
@@ -265,7 +320,9 @@ export default function TeacherSchedulePage() {
             <FaCalendarAlt className="text-slate-400 text-3xl" />
           </div>
           <p className="font-bold dark:text-white text-lg">Sinfni tanlang</p>
-          <p className="text-slate-400 dark:text-slate-500 text-sm">Yuqoridagi sinflardan birini bosing</p>
+          <p className="text-slate-400 dark:text-slate-500 text-sm">
+            Yuqoridagi sinflardan birini bosing
+          </p>
         </div>
       )}
 
@@ -276,10 +333,11 @@ export default function TeacherSchedulePage() {
             <FaSchool className="text-slate-400 text-3xl" />
           </div>
           <p className="font-bold dark:text-white text-lg">Sinflar yo'q</p>
-          <p className="text-slate-400 dark:text-slate-500 text-sm">Avval sinf yarating</p>
+          <p className="text-slate-400 dark:text-slate-500 text-sm">
+            Avval sinf yarating
+          </p>
         </div>
       )}
     </div>
   );
 }
-

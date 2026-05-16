@@ -2,12 +2,31 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../../context/AppContext";
 import { Modal, SectionLabel } from "../../components/ui";
-import { FaPlus, FaUsers, FaEdit, FaTrash, FaCheck, FaTimes, FaSchool, FaSearch, FaSortAmountDown, FaUserGraduate, FaClock } from "react-icons/fa";
+import {
+  FaPlus,
+  FaUsers,
+  FaEdit,
+  FaTrash,
+  FaCheck,
+  FaTimes,
+  FaSchool,
+  FaSearch,
+  FaSortAmountDown,
+  FaUserGraduate,
+  FaClock,
+} from "react-icons/fa";
 
 const BLANK = { name: "", description: "" };
 
 export default function TeacherClassesPage() {
-  const { classes, students, createClass, updateClass, deleteClass, showToast } = useApp();
+  const {
+    classes,
+    students,
+    createClass,
+    updateClass,
+    deleteClass,
+    showToast,
+  } = useApp();
   const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -21,16 +40,17 @@ export default function TeacherClassesPage() {
   // Filter and sort classes
   const filteredClasses = useMemo(() => {
     let result = [...classes];
-    
+
     // Filter by search
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase();
-      result = result.filter(c => 
-        c.name.toLowerCase().includes(query) ||
-        (c.description && c.description.toLowerCase().includes(query))
+      result = result.filter(
+        (c) =>
+          c.name.toLowerCase().includes(query) ||
+          (c.description && c.description.toLowerCase().includes(query)),
       );
     }
-    
+
     // Sort
     result.sort((a, b) => {
       switch (sortBy) {
@@ -43,13 +63,13 @@ export default function TeacherClassesPage() {
           return new Date(b.createdAt) - new Date(a.createdAt);
       }
     });
-    
+
     return result;
   }, [classes, searchQuery, sortBy]);
 
   // Get students in a class
   const getClassStudents = (className) => {
-    return students.filter(s => s.class === className).slice(0, 3);
+    return students.filter((s) => s.class === className).slice(0, 3);
   };
 
   const handleSubmit = async () => {
@@ -115,13 +135,22 @@ export default function TeacherClassesPage() {
     setDeleteId(null);
   };
 
-  const totalStudents = classes.reduce((sum, c) => sum + (c.studentCount || 0), 0);
-  const avgStudents = classes.length ? Math.round(totalStudents / classes.length) : 0;
+  const totalStudents = classes.reduce(
+    (sum, c) => sum + (c.studentCount || 0),
+    0,
+  );
+  const avgStudents = classes.length
+    ? Math.round(totalStudents / classes.length)
+    : 0;
 
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
-    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+    });
   };
 
   return (
@@ -129,10 +158,15 @@ export default function TeacherClassesPage() {
       {/* Header */}
       <div className="flex sm:flex-row flex-col sm:justify-between sm:items-center gap-4">
         <div>
-          <p className="font-semibold text-slate-500 dark:text-slate-400 text-xs">Teacher Dashboard</p>
-          <h2 className="font-poppins font-black text-slate-800 dark:text-white text-2xl md:text-3xl">My Classes</h2>
+          <p className="font-semibold text-slate-500 dark:text-slate-400 text-xs">
+            Teacher Dashboard
+          </p>
+          <h2 className="font-poppins font-black text-slate-800 dark:text-white text-2xl md:text-3xl">
+            My Classes
+          </h2>
           <p className="mt-1 text-slate-400 dark:text-slate-500 text-xs">
-            {classes.length} class{classes.length !== 1 ? 'es' : ''} • {totalStudents} student{totalStudents !== 1 ? 's' : ''}
+            {classes.length} class{classes.length !== 1 ? "es" : ""} •{" "}
+            {totalStudents} student{totalStudents !== 1 ? "s" : ""}
           </p>
         </div>
         <button
@@ -173,36 +207,49 @@ export default function TeacherClassesPage() {
       <div className="gap-3 grid grid-cols-2 lg:grid-cols-4">
         <div className="bg-gradient-to-br from-brand-500 to-brand-700 shadow-brand-500/20 shadow-lg p-5 rounded-2xl text-white">
           <div className="flex justify-between items-center mb-2">
-            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">Classes</p>
+            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">
+              Classes
+            </p>
             <FaSchool className="opacity-50 text-lg" />
           </div>
           <p className="font-poppins font-black text-4xl">{classes.length}</p>
         </div>
         <div className="bg-gradient-to-br from-blue-500 to-blue-700 shadow-blue-500/20 shadow-lg p-5 rounded-2xl text-white">
           <div className="flex justify-between items-center mb-2">
-            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">Students</p>
+            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">
+              Students
+            </p>
             <FaUsers className="opacity-50 text-lg" />
           </div>
           <p className="font-poppins font-black text-4xl">{totalStudents}</p>
         </div>
         <div className="bg-gradient-to-br from-purple-500 to-purple-700 shadow-lg shadow-purple-500/20 p-5 rounded-2xl text-white">
           <div className="flex justify-between items-center mb-2">
-            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">Avg/Class</p>
+            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">
+              Avg/Class
+            </p>
             <FaUserGraduate className="opacity-50 text-lg" />
           </div>
           <p className="font-poppins font-black text-4xl">{avgStudents}</p>
         </div>
         <div className="hidden lg:block bg-gradient-to-br from-amber-500 to-orange-600 shadow-amber-500/20 shadow-lg p-5 rounded-2xl text-white">
           <div className="flex justify-between items-center mb-2">
-            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">This Month</p>
+            <p className="opacity-80 font-bold text-xs uppercase tracking-wider">
+              This Month
+            </p>
             <FaClock className="opacity-50 text-lg" />
           </div>
           <p className="font-poppins font-black text-4xl">
-            {classes.filter(c => {
-              const created = new Date(c.createdAt);
-              const now = new Date();
-              return created.getMonth() === now.getMonth() && created.getFullYear() === now.getFullYear();
-            }).length}
+            {
+              classes.filter((c) => {
+                const created = new Date(c.createdAt);
+                const now = new Date();
+                return (
+                  created.getMonth() === now.getMonth() &&
+                  created.getFullYear() === now.getFullYear()
+                );
+              }).length
+            }
           </p>
         </div>
       </div>
@@ -210,7 +257,9 @@ export default function TeacherClassesPage() {
       {/* Classes List */}
       <div>
         <SectionLabel>
-          {searchQuery ? `Search Results (${filteredClasses.length})` : "All Classes"}
+          {searchQuery
+            ? `Search Results (${filteredClasses.length})`
+            : "All Classes"}
         </SectionLabel>
         {filteredClasses.length === 0 ? (
           <div className="py-16 text-center">
@@ -226,13 +275,21 @@ export default function TeacherClassesPage() {
             </div>
             {searchQuery ? (
               <>
-                <p className="font-bold dark:text-white text-lg">No classes found</p>
-                <p className="mt-1 text-slate-400 dark:text-slate-500 text-sm">Try a different search term</p>
+                <p className="font-bold dark:text-white text-lg">
+                  No classes found
+                </p>
+                <p className="mt-1 text-slate-400 dark:text-slate-500 text-sm">
+                  Try a different search term
+                </p>
               </>
             ) : (
               <>
-                <p className="font-bold dark:text-white text-lg">No classes yet</p>
-                <p className="mt-1 mb-4 text-slate-400 dark:text-slate-500 text-sm">Create your first class to get started</p>
+                <p className="font-bold dark:text-white text-lg">
+                  No classes yet
+                </p>
+                <p className="mt-1 mb-4 text-slate-400 dark:text-slate-500 text-sm">
+                  Create your first class to get started
+                </p>
                 <button
                   onClick={openAddModal}
                   className="inline-flex items-center gap-2 bg-brand-500 hover:bg-brand-600 px-6 py-3 border-none rounded-full font-extrabold text-white text-sm transition-all cursor-pointer"
@@ -257,12 +314,18 @@ export default function TeacherClassesPage() {
                         {cls.name}
                       </h3>
                       {cls.description && (
-                        <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm line-clamp-2">{cls.description}</p>
+                        <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm line-clamp-2">
+                          {cls.description}
+                        </p>
                       )}
                     </div>
                     <div className="flex flex-shrink-0 gap-1.5">
                       <button
-                        onClick={() => navigate(`/teacher/students?class=${encodeURIComponent(cls.name)}`)}
+                        onClick={() =>
+                          navigate(
+                            `/teacher/students?class=${encodeURIComponent(cls.name)}`,
+                          )
+                        }
                         className="bg-slate-100 hover:bg-brand-100 dark:bg-slate-700 dark:hover:bg-brand-900/30 p-2 rounded-xl transition-colors cursor-pointer"
                         title="View Students"
                       >
@@ -284,7 +347,7 @@ export default function TeacherClassesPage() {
                       </button>
                     </div>
                   </div>
-                  
+
                   {/* Student Preview */}
                   {classStudents.length > 0 && (
                     <div className="flex items-center gap-2 mb-3">
@@ -293,10 +356,13 @@ export default function TeacherClassesPage() {
                           <div
                             key={s._id}
                             className="flex justify-center items-center border-2 border-white dark:border-slate-800 rounded-full w-8 h-8 font-bold text-white text-xs"
-                            style={{ background: s.color || '#22c55e', zIndex: 3 - i }}
+                            style={{
+                              background: s.color || "#22c55e",
+                              zIndex: 3 - i,
+                            }}
                             title={s.name}
                           >
-                            {s.name?.charAt(0) || '?'}
+                            {s.name?.charAt(0) || "?"}
                           </div>
                         ))}
                         {(cls.studentCount || 0) > 3 && (
@@ -306,11 +372,13 @@ export default function TeacherClassesPage() {
                         )}
                       </div>
                       <span className="text-slate-400 dark:text-slate-500 text-xs">
-                        {cls.studentCount === 1 ? '1 student' : `${cls.studentCount || 0} students`}
+                        {cls.studentCount === 1
+                          ? "1 student"
+                          : `${cls.studentCount || 0} students`}
                       </span>
                     </div>
                   )}
-                  
+
                   <div className="flex justify-between items-center pt-3 border-slate-100 dark:border-slate-700 border-t">
                     <div className="flex items-center gap-2 bg-brand-50 dark:bg-brand-900/30 px-3 py-1.5 rounded-xl">
                       <FaUsers className="text-brand-500 text-xs" />
@@ -334,27 +402,43 @@ export default function TeacherClassesPage() {
       {showModal && (
         <Modal onClose={closeModal}>
           <h3 className="flex items-center gap-2 mb-5 font-poppins font-black text-slate-800 dark:text-white text-xl">
-            {editingId ? <><FaEdit /> Edit Class</> : <><FaPlus /> Add New Class</>}
+            {editingId ? (
+              <>
+                <FaEdit /> Edit Class
+              </>
+            ) : (
+              <>
+                <FaPlus /> Add New Class
+              </>
+            )}
           </h3>
           <div className="space-y-3 mb-4">
             <div>
-              <label className="block mb-1.5 font-bold text-slate-600 dark:text-slate-300 text-xs">Class Name *</label>
+              <label className="block mb-1.5 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                Class Name *
+              </label>
               <input
                 type="text"
                 placeholder="e.g. 8-A"
                 value={form.name}
-                onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, name: e.target.value }))
+                }
                 autoFocus
                 className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all"
               />
             </div>
             <div>
-              <label className="block mb-1.5 font-bold text-slate-600 dark:text-slate-300 text-xs">Description (optional)</label>
+              <label className="block mb-1.5 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                Description (optional)
+              </label>
               <input
                 type="text"
                 placeholder="Brief description"
                 value={form.description}
-                onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
+                onChange={(e) =>
+                  setForm((f) => ({ ...f, description: e.target.value }))
+                }
                 className="bg-slate-50 dark:bg-slate-700 px-4 py-3 border-2 border-transparent focus:border-brand-400 rounded-xl outline-none w-full font-medium text-slate-800 dark:text-slate-200 text-sm transition-all"
               />
             </div>
@@ -374,9 +458,13 @@ export default function TeacherClassesPage() {
               {loading ? (
                 "Saving..."
               ) : editingId ? (
-                <><FaCheck /> Update</>
+                <>
+                  <FaCheck /> Update
+                </>
               ) : (
-                <><FaPlus /> Create</>
+                <>
+                  <FaPlus /> Create
+                </>
               )}
             </button>
           </div>
@@ -390,9 +478,12 @@ export default function TeacherClassesPage() {
             <div className="flex justify-center items-center bg-red-100 dark:bg-red-900/40 mx-auto mb-4 rounded-full w-16 h-16">
               <FaTrash className="text-red-500 text-2xl" />
             </div>
-            <h3 className="mb-2 font-poppins font-black dark:text-white text-xl">Delete Class?</h3>
+            <h3 className="mb-2 font-poppins font-black dark:text-white text-xl">
+              Delete Class?
+            </h3>
             <p className="mb-5 text-slate-500 dark:text-slate-400 text-sm">
-              Students in this class will be unassigned. This action cannot be undone.
+              Students in this class will be unassigned. This action cannot be
+              undone.
             </p>
             <div className="flex gap-3">
               <button
@@ -406,7 +497,13 @@ export default function TeacherClassesPage() {
                 disabled={loading}
                 className="flex flex-[2] justify-center items-center gap-2 bg-red-500 hover:bg-red-600 disabled:opacity-60 py-3 border-none rounded-2xl font-extrabold text-white text-sm transition-all cursor-pointer"
               >
-                {loading ? "Deleting..." : <><FaTrash /> Delete</>}
+                {loading ? (
+                  "Deleting..."
+                ) : (
+                  <>
+                    <FaTrash /> Delete
+                  </>
+                )}
               </button>
             </div>
           </div>

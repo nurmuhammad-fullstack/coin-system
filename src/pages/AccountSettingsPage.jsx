@@ -3,31 +3,38 @@ import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useApp } from "../context/AppContext";
 import { Card, Avatar, SectionLabel, BackButton } from "../components/ui";
-import { FaUser, FaLock, FaInfoCircle, FaCoins, FaCamera, FaImage } from "react-icons/fa";
-
-const COLORS = [
-  "#22c55e", "#3b82f6", "#ef4444", "#f59e0b", 
-  "#8b5cf6", "#ec4899", "#06b6d4", "#84cc16"
-];
+import {
+  FaUser,
+  FaLock,
+  FaInfoCircle,
+  FaCoins,
+  FaCamera,
+  FaImage,
+} from "react-icons/fa";
 
 export default function AccountSettingsPage() {
   const navigate = useNavigate();
   const { currentUser, updateCurrentUser, uploadAvatar, showToast } = useApp();
   const fileInputRef = useRef(null);
-  
+
   const [name, setName] = useState(currentUser?.name || "");
   const [email, setEmail] = useState(currentUser?.email || "");
-  const [color, setColor] = useState(currentUser?.color || "#22c55e");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [avatarCleared, setAvatarCleared] = useState(false);
 
   // Keep avatarPreview in sync with currentUser's avatar
   const [avatarPreview, setAvatarPreview] = useState(() => {
     const avatar = currentUser?.avatar;
-    if (avatar && (avatar.startsWith('/uploads') || avatar.startsWith('http') || avatar.startsWith('data:'))) {
+    if (
+      avatar &&
+      (avatar.startsWith("/uploads") ||
+        avatar.startsWith("http") ||
+        avatar.startsWith("data:"))
+    ) {
       return avatar;
     }
     return "";
@@ -36,21 +43,34 @@ export default function AccountSettingsPage() {
   // Sync with currentUser when it changes
   useEffect(() => {
     const avatar = currentUser?.avatar;
-    if (avatar && (avatar.startsWith('/uploads') || avatar.startsWith('http') || avatar.startsWith('data:'))) {
+    if (
+      avatar &&
+      (avatar.startsWith("/uploads") ||
+        avatar.startsWith("http") ||
+        avatar.startsWith("data:"))
+    ) {
       // Only update if we don't have a pending preview
       setAvatarPreview(avatar);
+      setAvatarCleared(false);
     }
   }, [currentUser?.avatar]);
 
-  // Check if avatar is an uploaded image
-  const isImageAvatar = currentUser?.avatar && (currentUser?.avatar.startsWith('/uploads') || currentUser?.avatar.startsWith('http') || currentUser?.avatar.startsWith('data:'));
+  const getInitials = (value) =>
+    value
+      ? value
+          .split(" ")
+          .map((n) => n[0])
+          .join("")
+          .toUpperCase()
+          .slice(0, 2)
+      : "?";
 
   const handleFileSelect = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
     // Validate file type
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith("image/")) {
       showToast("Please select an image file", "error");
       return;
     }
@@ -65,6 +85,7 @@ export default function AccountSettingsPage() {
     const reader = new FileReader();
     reader.onload = (e) => setAvatarPreview(e.target?.result);
     reader.readAsDataURL(file);
+    setAvatarCleared(false);
 
     // Upload to server
     setUploading(true);
@@ -83,9 +104,16 @@ export default function AccountSettingsPage() {
   const handleUseInitials = () => {
     // Clear avatarPreview to show initials
     setAvatarPreview("");
+    setAvatarCleared(true);
   };
 
-  const previewDisplay = avatarPreview || (name ? name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2) : "?");
+  const previewUser = {
+    ...currentUser,
+    name,
+    avatar: avatarCleared
+      ? getInitials(name)
+      : avatarPreview || currentUser?.avatar || getInitials(name),
+  };
 
   const handleProfileUpdate = async (e) => {
     e.preventDefault();
@@ -93,28 +121,31 @@ export default function AccountSettingsPage() {
       showToast("Name is required", "error");
       return;
     }
-    
+
     // If avatarPreview is empty, user wants to use initials
     // Otherwise, keep the current avatar (either uploaded or existing)
     let finalAvatar;
-    if (!avatarPreview || avatarPreview === "") {
-      finalAvatar = name.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
-    } else if (avatarPreview.startsWith('/uploads') || avatarPreview.startsWith('http') || avatarPreview.startsWith('data:')) {
+    if (avatarCleared || !avatarPreview || avatarPreview === "") {
+      finalAvatar = getInitials(name);
+    } else if (
+      avatarPreview.startsWith("/uploads") ||
+      avatarPreview.startsWith("http") ||
+      avatarPreview.startsWith("data:")
+    ) {
       // Keep the uploaded image path
       finalAvatar = currentUser?.avatar;
     } else {
       finalAvatar = avatarPreview;
     }
-    
+
     setLoading(true);
     const result = await updateCurrentUser({
       name: name.trim(),
       email: email.trim(),
       avatar: finalAvatar,
-      color,
     });
     setLoading(false);
-    
+
     if (result.ok) {
       showToast("Profile updated successfully!");
     } else {
@@ -124,28 +155,28 @@ export default function AccountSettingsPage() {
 
   const handlePasswordChange = async (e) => {
     e.preventDefault();
-    
+
     if (!currentPassword || !newPassword || !confirmPassword) {
       showToast("Please fill in all password fields", "error");
       return;
     }
-    
+
     if (newPassword !== confirmPassword) {
       showToast("New passwords do not match", "error");
       return;
     }
-    
+
     if (newPassword.length < 4) {
       showToast("Password must be at least 4 characters", "error");
       return;
     }
-    
+
     setLoading(true);
     const result = await updateCurrentUser({
       password: newPassword,
     });
     setLoading(false);
-    
+
     if (result.ok) {
       showToast("Password changed successfully!");
       setCurrentPassword("");
@@ -161,21 +192,26 @@ export default function AccountSettingsPage() {
       {/* Mobile Header */}
       <div className="md:hidden">
         <BackButton onClick={() => navigate(-1)} label="Back" />
-        <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">Account Settings</h1>
+        <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">
+          Account Settings
+        </h1>
       </div>
 
       {/* Desktop Header */}
       <div className="hidden md:flex justify-between items-center mb-8">
         <div>
-          <h1 className="font-poppins font-black text-slate-800 dark:text-white text-3xl">Account Settings</h1>
-          <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm">Manage your profile and security settings</p>
+          <h1 className="font-poppins font-black text-slate-800 dark:text-white text-3xl">
+            Account Settings
+          </h1>
+          <p className="mt-1 text-slate-500 dark:text-slate-400 text-sm">
+            Manage your profile and security settings
+          </p>
         </div>
-        <button 
+        <BackButton
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 bg-white hover:bg-slate-50 dark:bg-slate-800 dark:hover:bg-slate-700 px-4 py-2 border border-slate-200 dark:border-slate-600 rounded-xl font-bold text-slate-600 dark:text-slate-300 text-sm transition-colors cursor-pointer"
-        >
-          ← Back
-        </button>
+          label="Back"
+          className="mb-0 bg-white dark:bg-slate-800 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl shadow-sm min-h-[42px]"
+        />
       </div>
 
       {/* Desktop Layout */}
@@ -183,45 +219,40 @@ export default function AccountSettingsPage() {
         {/* Left Column - Profile */}
         <div className="space-y-6 col-span-2">
           {/* Profile Info Card */}
-          <Card className="p-6">
+          <Card className="p-6 dark:bg-slate-800/95 dark:border dark:border-slate-700 dark:shadow-lg dark:shadow-slate-950/20">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex justify-center items-center bg-brand-100 dark:bg-brand-900/50 rounded-xl w-10 h-10">
                 <FaUser className="text-brand-500 dark:text-brand-400" />
               </div>
               <div>
-                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">Profile Information</h2>
-                <p className="text-slate-400 dark:text-slate-500 text-xs">Update your personal details</p>
+                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">
+                  Profile Information
+                </h2>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">
+                  Update your personal details
+                </p>
               </div>
             </div>
-            
+
             <div className="flex flex-col items-center mb-6">
               <div className="group relative mb-3">
-                {/* Show uploaded image or avatar */}
-                {isImageAvatar || avatarPreview?.startsWith('data:') ? (
-                  <img 
-                    src={avatarPreview?.startsWith('data:') ? avatarPreview : avatarPreview} 
-                    alt="Profile" 
-                    className="border-4 border-white dark:border-slate-700 rounded-full w-24 h-24 object-cover"
-                  />
-                ) : (
-                  <Avatar user={{ avatar: previewDisplay, color }} size={100} />
-                )}
-                
+                <Avatar user={previewUser} size={100} />
+
                 {/* Upload overlay */}
-                <div 
+                <div
                   onClick={() => fileInputRef.current?.click()}
                   className="absolute inset-0 flex justify-center items-center bg-black/50 opacity-0 group-hover:opacity-100 rounded-full transition-opacity cursor-pointer"
                 >
                   <FaCamera className="text-white text-2xl" />
                 </div>
-                
+
                 {uploading && (
                   <div className="absolute inset-0 flex justify-center items-center bg-black/50 rounded-full">
                     <div className="border-2 border-white border-t-transparent rounded-full w-6 h-6 animate-spin" />
                   </div>
                 )}
               </div>
-              
+
               <input
                 ref={fileInputRef}
                 type="file"
@@ -229,16 +260,16 @@ export default function AccountSettingsPage() {
                 onChange={handleFileSelect}
                 className="hidden"
               />
-              
+
               <div className="flex gap-2 mt-2">
-                <button 
+                <button
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploading}
-                  className="flex items-center gap-2 bg-brand-100 hover:bg-brand-200 dark:bg-brand-900/50 dark:hover:bg-brand-800 px-3 py-1.5 rounded-lg font-bold text-brand-600 dark:text-brand-400 text-xs transition-colors cursor-pointer"
+                  className="flex items-center gap-2 bg-brand-100 hover:bg-brand-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 border border-transparent dark:border-brand-400/25 rounded-lg font-bold text-brand-600 dark:text-brand-300 text-xs transition-colors cursor-pointer"
                 >
                   <FaImage /> Upload Photo
                 </button>
-                <button 
+                <button
                   onClick={handleUseInitials}
                   disabled={uploading}
                   className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 rounded-lg font-bold text-slate-600 dark:text-slate-300 text-xs transition-colors cursor-pointer"
@@ -250,7 +281,9 @@ export default function AccountSettingsPage() {
 
             <div className="gap-4 grid grid-cols-2">
               <div>
-                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Full Name</label>
+                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">
+                  Full Name
+                </label>
                 <input
                   type="text"
                   value={name}
@@ -258,30 +291,17 @@ export default function AccountSettingsPage() {
                   className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 />
               </div>
-              
+
               <div>
-                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Email Address</label>
+                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">
+                  Email Address
+                </label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="bg-white dark:bg-slate-700 px-4 py-3 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
                 />
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <label className="block mb-3 font-bold text-slate-600 dark:text-slate-300 text-sm">Avatar Color</label>
-              <div className="flex gap-3">
-                {COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    className={`w-10 h-10 rounded-full transition-all cursor-pointer ${color === c ? "ring-4 ring-offset-2 ring-slate-300 dark:ring-slate-600 scale-110" : "hover:scale-105"}`}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
               </div>
             </div>
 
@@ -295,20 +315,26 @@ export default function AccountSettingsPage() {
           </Card>
 
           {/* Change Password Card */}
-          <Card className="p-6">
+          <Card className="p-6 dark:bg-slate-800/95 dark:border dark:border-slate-700 dark:shadow-lg dark:shadow-slate-950/20">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex justify-center items-center bg-amber-100 dark:bg-amber-900/50 rounded-xl w-10 h-10">
                 <FaLock className="text-amber-500 dark:text-amber-400" />
               </div>
               <div>
-                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">Change Password</h2>
-                <p className="text-slate-400 dark:text-slate-500 text-xs">Update your security credentials</p>
+                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">
+                  Change Password
+                </h2>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">
+                  Update your security credentials
+                </p>
               </div>
             </div>
-            
+
             <form onSubmit={handlePasswordChange} className="space-y-4">
               <div>
-                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Current Password</label>
+                <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">
+                  Current Password
+                </label>
                 <input
                   type="password"
                   value={currentPassword}
@@ -317,10 +343,12 @@ export default function AccountSettingsPage() {
                   placeholder="Enter current password"
                 />
               </div>
-              
+
               <div className="gap-4 grid grid-cols-2">
                 <div>
-                  <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">New Password</label>
+                  <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">
+                    New Password
+                  </label>
                   <input
                     type="password"
                     value={newPassword}
@@ -329,9 +357,11 @@ export default function AccountSettingsPage() {
                     placeholder="Enter new password"
                   />
                 </div>
-                
+
                 <div>
-                  <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">Confirm Password</label>
+                  <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-sm">
+                    Confirm Password
+                  </label>
                   <input
                     type="password"
                     value={confirmPassword}
@@ -356,55 +386,75 @@ export default function AccountSettingsPage() {
         {/* Right Column - Account Info */}
         <div className="space-y-6">
           {/* Account Summary */}
-          <Card className="p-6">
+          <Card className="p-6 dark:bg-slate-800/95 dark:border dark:border-slate-700 dark:shadow-lg dark:shadow-slate-950/20">
             <div className="flex items-center gap-3 mb-6">
               <div className="flex justify-center items-center bg-indigo-100 dark:bg-indigo-900/50 rounded-xl w-10 h-10">
                 <FaInfoCircle className="text-indigo-500 dark:text-indigo-400" />
               </div>
               <div>
-                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">Account Info</h2>
-                <p className="text-slate-400 dark:text-slate-500 text-xs">Your account details</p>
+                <h2 className="font-poppins font-bold text-slate-800 dark:text-white text-lg">
+                  Account Info
+                </h2>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">
+                  Your account details
+                </p>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
-                <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">Role</span>
-                <span className="bg-white dark:bg-slate-600 px-3 py-1 rounded-lg font-bold text-slate-700 dark:text-slate-200 capitalize">{currentUser?.role}</span>
+                <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">
+                  Role
+                </span>
+                <span className="bg-white dark:bg-slate-600 px-3 py-1 rounded-lg font-bold text-slate-700 dark:text-slate-200 capitalize">
+                  {currentUser?.role}
+                </span>
               </div>
-              
+
               {currentUser?.class && (
                 <div className="flex justify-between items-center bg-slate-50 dark:bg-slate-700 p-3 rounded-xl">
-                  <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">Class</span>
-                  <span className="bg-white dark:bg-slate-600 px-3 py-1 rounded-lg font-bold text-slate-700 dark:text-slate-200">{currentUser.class}</span>
+                  <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">
+                    Class
+                  </span>
+                  <span className="bg-white dark:bg-slate-600 px-3 py-1 rounded-lg font-bold text-slate-700 dark:text-slate-200">
+                    {currentUser.class}
+                  </span>
                 </div>
               )}
-              
-              <div className="flex justify-between items-center bg-amber-50 dark:bg-amber-900/30 p-3 rounded-xl">
-                <div className="flex items-center gap-2">
-                  <FaCoins className="text-amber-500" />
-                  <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">Coins</span>
+
+              {currentUser?.role !== "teacher" && (
+                <div className="flex justify-between items-center bg-amber-50 dark:bg-amber-900/30 p-3 rounded-xl">
+                  <div className="flex items-center gap-2">
+                    <FaCoins className="text-amber-500" />
+                    <span className="font-medium text-slate-500 dark:text-slate-400 text-sm">
+                      Coins
+                    </span>
+                  </div>
+                  <span className="font-black text-brand-600 dark:text-brand-400 text-lg">
+                    {currentUser?.coins?.toLocaleString()}
+                  </span>
                 </div>
-                <span className="font-black text-brand-600 dark:text-brand-400 text-lg">{currentUser?.coins?.toLocaleString()}</span>
-              </div>
+              )}
             </div>
           </Card>
 
           {/* Quick Stats */}
-          <Card className="bg-brand-50 dark:bg-brand-900/30 p-6">
-            <h3 className="mb-4 font-poppins font-bold text-slate-800 dark:text-white">Quick Tips</h3>
+          <Card className="bg-brand-50 dark:bg-slate-800/95 p-6 dark:border dark:border-brand-400/20 dark:shadow-lg dark:shadow-slate-950/20">
+            <h3 className="mb-4 font-poppins font-bold text-slate-800 dark:text-white">
+              Quick Tips
+            </h3>
             <ul className="space-y-3 text-slate-600 dark:text-slate-300 text-sm">
               <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-brand-500">•</span>
-                Keep your profile information up to date
+                <span className="flex-shrink-0 bg-brand-500 mt-[7px] rounded-full w-1.5 h-1.5" />
+                <span>Keep your profile information up to date</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-brand-500">•</span>
-                Use a strong password with at least 4 characters
+                <span className="flex-shrink-0 bg-brand-500 mt-[7px] rounded-full w-1.5 h-1.5" />
+                <span>Use a strong password with at least 4 characters</span>
               </li>
               <li className="flex items-start gap-2">
-                <span className="mt-0.5 text-brand-500">•</span>
-                Choose a unique avatar color to stand out
+                <span className="flex-shrink-0 bg-brand-500 mt-[7px] rounded-full w-1.5 h-1.5" />
+                <span>Upload a clear profile photo when available</span>
               </li>
             </ul>
           </Card>
@@ -414,35 +464,28 @@ export default function AccountSettingsPage() {
       {/* Mobile Layout */}
       <div className="md:hidden space-y-4 mx-auto px-4 sm:px-6 lg:px-8 py-5 max-w-7xl">
         <BackButton onClick={() => navigate(-1)} label="Back" />
-        
-        <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">Account Settings</h1>
+
+        <h1 className="font-poppins font-black text-slate-800 dark:text-white text-2xl">
+          Account Settings
+        </h1>
 
         {/* Profile Info */}
         <Card className="p-5">
           <SectionLabel>Profile Information</SectionLabel>
-          
+
           <div className="flex flex-col items-center mb-5">
             <div className="group relative mb-3">
-              {/* Show uploaded image or avatar */}
-              {isImageAvatar || avatarPreview?.startsWith('data:') ? (
-                <img 
-                  src={avatarPreview?.startsWith('data:') ? avatarPreview : avatarPreview} 
-                  alt="Profile" 
-                  className="border-4 border-white dark:border-slate-700 rounded-full w-20 h-20 object-cover"
-                />
-              ) : (
-                <Avatar user={{ avatar: previewDisplay, color }} size={80} />
-              )}
-              
+              <Avatar user={previewUser} size={80} />
+
               {/* Upload overlay */}
-              <div 
+              <div
                 onClick={() => fileInputRef.current?.click()}
                 className="absolute inset-0 flex justify-center items-center bg-black/50 opacity-0 group-hover:opacity-100 rounded-full transition-opacity cursor-pointer"
               >
                 <FaCamera className="text-white text-xl" />
               </div>
             </div>
-            
+
             <input
               ref={fileInputRef}
               type="file"
@@ -450,16 +493,16 @@ export default function AccountSettingsPage() {
               onChange={handleFileSelect}
               className="hidden"
             />
-            
+
             <div className="flex gap-2">
-              <button 
+              <button
                 onClick={() => fileInputRef.current?.click()}
                 disabled={uploading}
-                className="flex items-center gap-1 bg-brand-100 hover:bg-brand-200 dark:bg-brand-900/50 dark:hover:bg-brand-800 px-3 py-1.5 rounded-lg font-bold text-brand-600 dark:text-brand-400 text-xs transition-colors cursor-pointer"
+                className="flex items-center gap-1 bg-brand-100 hover:bg-brand-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 border border-transparent dark:border-brand-400/25 rounded-lg font-bold text-brand-600 dark:text-brand-300 text-xs transition-colors cursor-pointer"
               >
                 <FaImage /> Upload
               </button>
-              <button 
+              <button
                 onClick={handleUseInitials}
                 className="flex items-center gap-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 rounded-lg font-bold text-slate-600 dark:text-slate-300 text-xs transition-colors cursor-pointer"
               >
@@ -470,7 +513,9 @@ export default function AccountSettingsPage() {
 
           <div className="space-y-3">
             <div>
-              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Full Name</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                Full Name
+              </label>
               <input
                 type="text"
                 value={name}
@@ -478,9 +523,11 @@ export default function AccountSettingsPage() {
                 className="bg-white dark:bg-slate-700 px-4 py-2.5 border border-slate-200 dark:border-slate-600 rounded-xl w-full font-bold text-slate-700 dark:text-slate-200 text-sm"
               />
             </div>
-            
+
             <div>
-              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Email</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                Email
+              </label>
               <input
                 type="email"
                 value={email}
@@ -489,20 +536,6 @@ export default function AccountSettingsPage() {
               />
             </div>
 
-            <div>
-              <label className="block mb-2 font-bold text-slate-600 dark:text-slate-300 text-xs">Avatar Color</label>
-              <div className="flex flex-wrap gap-2">
-                {COLORS.map((c) => (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setColor(c)}
-                    className={`w-8 h-8 rounded-full transition-transform ${color === c ? "ring-2 ring-offset-2 ring-slate-400 dark:ring-slate-500 scale-110" : "hover:scale-105"}`}
-                    style={{ backgroundColor: c }}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
 
           <button
@@ -517,10 +550,12 @@ export default function AccountSettingsPage() {
         {/* Change Password */}
         <Card className="p-5">
           <SectionLabel>Change Password</SectionLabel>
-          
+
           <form onSubmit={handlePasswordChange} className="space-y-3">
             <div>
-              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Current Password</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                Current Password
+              </label>
               <input
                 type="password"
                 value={currentPassword}
@@ -529,9 +564,11 @@ export default function AccountSettingsPage() {
                 placeholder="Enter current password"
               />
             </div>
-            
+
             <div>
-              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">New Password</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                New Password
+              </label>
               <input
                 type="password"
                 value={newPassword}
@@ -540,9 +577,11 @@ export default function AccountSettingsPage() {
                 placeholder="Enter new password"
               />
             </div>
-            
+
             <div>
-              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">Confirm New Password</label>
+              <label className="block mb-1 font-bold text-slate-600 dark:text-slate-300 text-xs">
+                Confirm New Password
+              </label>
               <input
                 type="password"
                 value={confirmPassword}
@@ -567,19 +606,33 @@ export default function AccountSettingsPage() {
           <SectionLabel>Account Information</SectionLabel>
           <div className="space-y-2 text-sm">
             <div className="flex justify-between">
-              <span className="font-medium text-slate-500 dark:text-slate-400">Role</span>
-              <span className="font-bold text-slate-700 dark:text-slate-200 capitalize">{currentUser?.role}</span>
+              <span className="font-medium text-slate-500 dark:text-slate-400">
+                Role
+              </span>
+              <span className="font-bold text-slate-700 dark:text-slate-200 capitalize">
+                {currentUser?.role}
+              </span>
             </div>
             {currentUser?.class && (
               <div className="flex justify-between">
-                <span className="font-medium text-slate-500 dark:text-slate-400">Class</span>
-                <span className="font-bold text-slate-700 dark:text-slate-200">{currentUser.class}</span>
+                <span className="font-medium text-slate-500 dark:text-slate-400">
+                  Class
+                </span>
+                <span className="font-bold text-slate-700 dark:text-slate-200">
+                  {currentUser.class}
+                </span>
               </div>
             )}
-            <div className="flex justify-between">
-              <span className="font-medium text-slate-500 dark:text-slate-400">Coins</span>
-              <span className="font-bold text-brand-600 dark:text-brand-400">{currentUser?.coins?.toLocaleString()}</span>
-            </div>
+            {currentUser?.role !== "teacher" && (
+              <div className="flex justify-between">
+                <span className="font-medium text-slate-500 dark:text-slate-400">
+                  Coins
+                </span>
+                <span className="font-bold text-brand-600 dark:text-brand-400">
+                  {currentUser?.coins?.toLocaleString()}
+                </span>
+              </div>
+            )}
           </div>
         </Card>
       </div>

@@ -7,9 +7,15 @@ export default function StudentLeaderboardPage() {
   const [filter, setFilter] = useState("All");
 
   const sorted = [...students].sort((a, b) => (b.coins || 0) - (a.coins || 0));
-  const filtered = filter === "All" ? sorted : sorted.filter((student) => student.class === filter);
-  const classes = [...new Set(students.map((student) => student.class).filter(Boolean))];
-  const userRank = sorted.findIndex((student) => student._id === currentUser?._id) + 1;
+  const filtered =
+    filter === "All"
+      ? sorted
+      : sorted.filter((student) => student.class === filter);
+  const classes = [
+    ...new Set(students.map((student) => student.class).filter(Boolean)),
+  ];
+  const userRank =
+    sorted.findIndex((student) => student._id === currentUser?._id) + 1;
   const top3 = filtered.slice(0, 3);
   const rest = filtered.slice(3);
 
@@ -22,33 +28,62 @@ export default function StudentLeaderboardPage() {
       .toUpperCase();
 
   const podium = [
-    { student: top3[1], medal: "🥈", barH: "h-14", size: "w-14 h-14", bg: "bg-slate-200 dark:bg-slate-600" },
-    { student: top3[0], medal: "🥇", barH: "h-20", size: "w-16 h-16", bg: "bg-amber-300" },
-    { student: top3[2], medal: "🥉", barH: "h-10", size: "w-12 h-12", bg: "bg-orange-200 dark:bg-orange-400" },
+    {
+      student: top3[1],
+      medal: "🥈",
+      barH: "h-14",
+      size: "w-14 h-14",
+      bg: "bg-slate-200 dark:bg-slate-600",
+    },
+    {
+      student: top3[0],
+      medal: "🥇",
+      barH: "h-20",
+      size: "w-16 h-16",
+      bg: "bg-amber-300",
+    },
+    {
+      student: top3[2],
+      medal: "🥉",
+      barH: "h-10",
+      size: "w-12 h-12",
+      bg: "bg-orange-200 dark:bg-orange-400",
+    },
   ];
 
   return (
     <div className="space-y-5 mx-auto px-4 sm:px-6 lg:px-8 py-5 md:py-0 pb-10 max-w-7xl">
       <div className="pt-2 text-center">
-        <p className="mb-1 font-bold text-amber-400 text-xs uppercase tracking-widest">{APP_NAME}</p>
-        <h1 className="font-black text-slate-800 dark:text-white text-3xl">Leaderboard 🏆</h1>
+        <p className="mb-1 font-bold text-amber-400 text-xs uppercase tracking-widest">
+          {APP_NAME}
+        </p>
+        <h1 className="font-black text-slate-800 dark:text-white text-3xl">
+          Leaderboard 🏆
+        </h1>
       </div>
 
       {userRank > 0 && (
         <div className="flex justify-between items-center bg-brand-500 px-5 py-4 rounded-2xl">
           <div>
-            <p className="mb-0.5 font-bold text-brand-100 text-xs">Sizning o&apos;rningiz</p>
+            <p className="mb-0.5 font-bold text-brand-100 text-xs">
+              Sizning o&apos;rningiz
+            </p>
             <p className="font-black text-white text-3xl">#{userRank}</p>
           </div>
           <div className="text-right">
             <p className="mb-0.5 font-bold text-brand-100 text-xs">Coinlar</p>
-            <p className="font-black text-white text-2xl">🪙 {currentUser?.coins || 0}</p>
+            <p className="font-black text-white text-2xl">
+              🪙 {currentUser?.coins || 0}
+            </p>
           </div>
         </div>
       )}
 
       {classes.length > 0 && (
-        <div className="flex gap-2 pb-1 overflow-x-auto" style={{ scrollbarWidth: "none" }}>
+        <div
+          className="flex gap-2 pb-1 overflow-x-auto"
+          style={{ scrollbarWidth: "none" }}
+        >
           {["All", ...classes].map((className) => (
             <button
               key={className}
@@ -74,7 +109,10 @@ export default function StudentLeaderboardPage() {
 
               const isMe = student._id === currentUser?._id;
               return (
-                <div key={student._id} className="flex flex-col items-center gap-1.5">
+                <div
+                  key={student._id}
+                  className="flex flex-col items-center gap-1.5"
+                >
                   <div
                     className={`${size} rounded-2xl flex items-center justify-center font-black text-white text-base ${
                       isMe ? "ring-2 ring-amber-400 ring-offset-2" : ""
@@ -86,8 +124,12 @@ export default function StudentLeaderboardPage() {
                   <p className="max-w-[64px] font-bold text-slate-700 dark:text-slate-300 text-xs text-center truncate">
                     {student.name?.split(" ")[0]}
                   </p>
-                  <p className="font-black text-[11px] text-slate-500 dark:text-slate-400">🪙 {student.coins || 0}</p>
-                  <div className={`w-16 ${barH} ${bg} rounded-t-xl flex items-start justify-center pt-1.5`}>
+                  <p className="font-black text-[11px] text-slate-500 dark:text-slate-400">
+                    🪙 {student.coins || 0}
+                  </p>
+                  <div
+                    className={`w-16 ${barH} ${bg} rounded-t-xl flex items-start justify-center pt-1.5`}
+                  >
                     <span className="text-xl">{medal}</span>
                   </div>
                 </div>
@@ -110,7 +152,9 @@ export default function StudentLeaderboardPage() {
                   : "bg-white dark:bg-slate-800")
               }
             >
-              <div className="w-7 font-black text-slate-300 dark:text-slate-600 text-sm text-center">#{index + 4}</div>
+              <div className="w-7 font-black text-slate-300 dark:text-slate-600 text-sm text-center">
+                #{index + 4}
+              </div>
               <div
                 className="flex flex-shrink-0 justify-center items-center rounded-xl w-10 h-10 font-black text-white text-sm"
                 style={{ background: student.color || "#6366f1" }}
@@ -121,12 +165,16 @@ export default function StudentLeaderboardPage() {
                 <p
                   className={
                     "font-bold text-sm truncate " +
-                    (isMe ? "text-amber-600 dark:text-amber-400" : "text-slate-700 dark:text-white")
+                    (isMe
+                      ? "text-amber-600 dark:text-amber-400"
+                      : "text-slate-700 dark:text-white")
                   }
                 >
                   {student.name} {isMe && "⭐"}
                 </p>
-                <p className="text-slate-400 dark:text-slate-500 text-xs">Sinf {student.class}</p>
+                <p className="text-slate-400 dark:text-slate-500 text-xs">
+                  Sinf {student.class}
+                </p>
               </div>
               <div
                 className={

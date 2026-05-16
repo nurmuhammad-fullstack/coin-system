@@ -1,18 +1,22 @@
 /* src/index.css */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&display=swap");
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
 
 body {
-  font-family: 'Nunito', sans-serif;
+  font-family: "Nunito", sans-serif;
   -webkit-font-smoothing: antialiased;
   margin: 0;
   background-color: #f8fafc;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .dark body {
@@ -24,24 +28,30 @@ body {
   color-scheme: dark;
 }
 
-.dark input, .dark textarea, .dark select {
+.dark input,
+.dark textarea,
+.dark select {
   background-color: #1e293b;
   color: #e2e8f0;
   border-color: #334155;
 }
 
-.dark input::placeholder, .dark textarea::placeholder {
+.dark input::placeholder,
+.dark textarea::placeholder {
   color: #64748b;
 }
 
-::-webkit-scrollbar { display: none; }
+::-webkit-scrollbar {
+  display: none;
+}
 
 @layer utilities {
-  .font-poppins { font-family: 'Poppins', sans-serif; }
+  .font-poppins {
+    font-family: "Poppins", sans-serif;
+  }
 }
 
 /* Smooth transitions for dark mode toggle */
 html {
   transition: background-color 0.3s ease;
 }
-
