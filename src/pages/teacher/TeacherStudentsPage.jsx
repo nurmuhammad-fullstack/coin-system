@@ -10,7 +10,6 @@ import {
   FaUserPlus,
   FaCheck,
   FaExclamationTriangle,
-  FaMedal,
 } from "react-icons/fa";
 
 const BLANK = {
